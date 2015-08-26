@@ -2,7 +2,11 @@
 #
 # Created by 'myth' on 8/26/15
 
-from tkinter import Frame, BOTH
+import logging
+
+from tkinter import Frame
+
+from common import log, debug
 
 
 class Main(Frame):
@@ -20,15 +24,24 @@ class Main(Frame):
 
         self.parent = parent
 
-    def center_window(self):
+    def set_window_size(self, x=1280, y=600):
         """
-        Centers this frame on the screen
+        Sets the dimensions of the main window
         """
 
-        width = 1280
-        height = 600
+        self.parent.geometry('%dx%d+0+0' % (x, y))
+        debug('Window size set to: %d x %d' % (x, y))
 
-        x = (self.parent.winfo_screenwidth() - width) / 2
-        y = (self.parent.winfo_screenheight() - height) / 2
+    def maximize_window(self):
+        """
+        Maximizes the window size
+        """
 
-        self.parent.geometry('%dx%d+%d+%d' % (width, height, x, y))
+        self.parent.attributes('-zoomed', True)
+
+    def fullscreen_window(self):
+        """
+        Enables fullscreen window mode
+        """
+
+        self.parent.attributes('-fullscreen', True)

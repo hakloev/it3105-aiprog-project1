@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import datetime
 
 from tkinter import Tk
 
-from gui.window import Main
+from common import log, debug
+from gui import window
 
 if __name__ == '__main__':
     """
@@ -13,11 +13,13 @@ if __name__ == '__main__':
     """
 
     logging.basicConfig(filename='debug.log', level=logging.DEBUG)
-    logging.debug('Starting application at %s' % datetime.datetime.now().strftime('%H:%M:%S'))
+    log('Starting application')
 
     root = Tk()
+
     # Render the main window
-    main = Main(root)
+    main = window.Main(root)
+    main.set_window_size(x=1024, y=500)
 
     # Start application
     root.mainloop()
