@@ -53,21 +53,27 @@ class Main(Frame):
 
         self.parent.attributes('-fullscreen', True)
 
-    def add_menu(self, menu, label):
+    def set_renderer(self, renderer):
         """
-        Adds a cascade menu to the menubar of the main window
-        :param menu: An instance of tkinter Menu
-        :param label: The label of the menu
+        Sets the active renderer to this window
         """
 
-        self.menu.add_cascade(label=label, menu=menu)
+        debug('Setting renderer to %s' % renderer)
 
-    def render(self, render_function=None):
+        if self.renderer and renderer is not self.renderer:
+            debug('Destroying and replacing old renderer: %s' % self.renderer)
+            self.renderer.destruct()
+        self.renderer = renderer
+
+    def render(self):
         """
         Renders the main content area, based on a provided render function
-        :param render_function: The function responsible for rendering the main content area
         """
 
-        if render_function:
-            render_function(self)
+        if self.renderer:
+            self.renderer.render()
+            self.pack(fill=BOTH)
 
+            debug('Main.render() called')
+        else:
+            log('Main.render() invoked without renderer set')
