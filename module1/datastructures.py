@@ -34,7 +34,6 @@ class Board(object):
             for y in range(obstacle[3]):
                 for x in range(obstacle[2]):
                     grid[obstacle[1] + y][obstacle[0] + x].arc_cost = float('Inf')
-
         return grid
     
 
@@ -89,7 +88,11 @@ class Board(object):
                 if self.grid[y][x].goal:
                     return self.grid[y][x]
     
+ 
+    def get_grid(self):
+        return self.grid
 
+   
     def __repr__(self):
         string = ""
         for row in reversed(self.grid):
@@ -110,6 +113,7 @@ class Node(object):
         self.f = 0
         self.parent = None
         self.children = set()
+        self.char = 'U'
 
 
     def __lt__(self, other):
@@ -121,6 +125,7 @@ class Node(object):
     
 
     def __repr__(self):
-        return ("Node((%s, %s), s=%s, g=%s, ac=%s)" % (self.x, self.y, self.start, self.goal, self.arc_cost)).ljust(31)
+        return "%s" % self.char
+        #return "Node((%s, %s), s=%s, g=%s, ac=%s)" % (self.x, self.y, self.start, self.goal, self.arc_cost)
 
 
