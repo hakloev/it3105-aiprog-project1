@@ -1,8 +1,25 @@
 # -*- coding: utf-8 -*-
 
-from Tkinter import *
+import logging
+
+from tkinter import Tk
+
+from common import log, debug
+from gui import window
 
 if __name__ == '__main__':
-    
-    print("Starting A* program")
-    #root = Tk()
+    """
+    Application start sequence
+    """
+
+    logging.basicConfig(filename='debug.log', level=logging.DEBUG)
+    log('Starting application')
+
+    root = Tk()
+
+    # Render the main window
+    main = window.Main(root)
+    main.set_window_size(x=1024, y=500)
+
+    # Start application
+    root.mainloop()
