@@ -5,7 +5,7 @@ import logging
 from tkinter import Tk
 
 from common import log, debug
-from gui import window, menu
+from gui import window, menu, render
 
 if __name__ == '__main__':
     """
@@ -23,6 +23,10 @@ if __name__ == '__main__':
 
     # Register menubar components
     menu.generate_menus(main.menu)
+
+    # Set the initial renderer
+    main.set_renderer(render.CanvasRenderer(main))
+    main.render()
 
     # Start application
     root.mainloop()

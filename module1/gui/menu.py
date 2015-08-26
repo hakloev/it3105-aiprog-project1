@@ -2,7 +2,7 @@
 #
 # Created by 'myth' on 8/26/15
 
-from tkinter import *
+from tkinter import Menu
 
 ### Define menu labels and their commands here
 MENUS = [
