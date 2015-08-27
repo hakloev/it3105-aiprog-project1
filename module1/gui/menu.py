@@ -4,31 +4,33 @@
 
 from tkinter import Menu
 
+from main import Controller
+
 ### Define menu labels and their commands here
 MENUS = [
     (u'Boards', [
-        (u'Name', None),
+        (u'Example 1', Controller.load_board),
     ]),
-    (u'Modes', [
-        (u'Mode', None),
+    (u'Solvers', [
+        (u'A*', None),
     ]),
     (u'Options', [
-        (u'Option', None),
+        (u'Mode', None),
     ])
 ]
 
 
-def generate_menus(root_menu):
+def generate_menus(window):
     """
     Takes in the window main menu bar and registers the submenus and
     their commands
-    :param root_menu: The main application window menu bar
+    :param window: The main application window
     """
 
     # Iterate over the main menu components and their actions
     for name, actions in MENUS:
-        menu = Menu(root_menu, tearoff=0)
-        root_menu.add_cascade(label=name, menu=menu)
+        menu = Menu(window.menu, tearoff=0)
+        window.menu.add_cascade(label=name, menu=menu)
 
         # Register commands
         for label, cmd in actions:

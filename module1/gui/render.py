@@ -2,7 +2,7 @@
 #
 # Created by 'myth' on 8/26/15
 
-from tkinter import Canvas, BOTH
+from tkinter import Canvas, BOTH, messagebox
 
 
 class AbstractRenderer(object):
@@ -16,6 +16,15 @@ class AbstractRenderer(object):
         :param window: Reference to the main window instance
         """
         self.window = window
+        self.board = None
+
+    def set_board(self, board):
+        """
+        Sets a board
+        :param board: Sets an active board to the renderer object
+        """
+
+        self.board = board
 
     def destruct(self):
         """
@@ -23,6 +32,14 @@ class AbstractRenderer(object):
         """
 
         pass
+
+    @staticmethod
+    def rgb_to_color(r, g, b):
+        """
+        Transforms an RGB color value to HEX
+        """
+
+        return '#%02x%02x%02x' % (r, g, b)
 
 
 class CanvasRenderer(AbstractRenderer):
@@ -41,16 +58,46 @@ class CanvasRenderer(AbstractRenderer):
         super().__init__(window)
 
         self.canvas = Canvas(self.window, width=width, height=height)
-        self.canvas.config(bg='red')
         self.canvas.pack(fill=BOTH, expand=1)
 
-    def render(self):
+    def render(self, math_coords=False):
         """
         Renders the data
         """
 
+        if not self.board:
+            messagebox.showerror(
+                'No Board',
+                'No board has been selected, cannot render'
+            )
+
         self.clear()
-        pass
+        payload = self.board
+
+        start = 0
+        end = len(payload)
+
+        if math_coords:
+            start = end
+            end = 0
+
+        for y in range(start, end):
+            for x in range(len(payload[y])):
+                coords = (
+                    x * 30 + 2,
+                    y * 30 + 2,
+                    x * 30 + 32,
+                    y * 30 + 32,
+                )
+
+                self.canvas.create_rectangle(
+                    *coords,
+                    fill=self.rgb_to_color(
+                        x * (255 // (x + 1)),
+                        y * (255 // (y + 1)),
+                        100
+                    )
+                )
 
     def clear(self):
         """

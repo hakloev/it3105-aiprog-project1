@@ -2,9 +2,7 @@
 #
 # Created by 'myth' on 8/26/15
 
-import logging
-
-from tkinter import *
+from tkinter import Frame, BOTH, Menu, messagebox
 
 from common import log, debug
 
@@ -14,7 +12,7 @@ class Main(Frame):
     Main window
     """
 
-    def __init__(self, parent):
+    def __init__(self, parent, controller):
         """
         Main window constructor. Takes in a root widget as an argument.
         """
@@ -27,6 +25,7 @@ class Main(Frame):
         self.parent = parent
         self.menu = menu
         self.renderer = None
+        self.controller = controller
 
         parent.config(menu=menu)
         parent.title('A*')
@@ -65,15 +64,19 @@ class Main(Frame):
             self.renderer.destruct()
         self.renderer = renderer
 
-    def render(self):
+    def render(self, *args, **kwargs):
         """
         Renders the main content area, based on a provided render function
         """
 
         if self.renderer:
-            self.renderer.render()
+            self.renderer.render(*args, **kwargs)
             self.pack(fill=BOTH)
 
             debug('Main.render() called')
         else:
+            messagebox.showerror(
+                'Missing renderer',
+                'Main.render() invoked without renderer set'
+            )
             log('Main.render() invoked without renderer set')
