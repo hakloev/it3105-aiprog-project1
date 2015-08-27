@@ -4,6 +4,7 @@ import logging
 
 from tkinter import *
 
+from datastructures import Board
 from gui.window import *
 from gui.menu import *
 from gui.render import *
@@ -44,10 +45,14 @@ class Controller(object):
         self.mode = 'dfs'
 
     @staticmethod
-    def load_board():
+    def load_board(**kwargs):
         """
         Loads a specific predefined board
         """
+
+        board = Board(kwargs['file_path'])
+
+        print(repr(board))
 
         messagebox.showwarning(
             'Missing command',

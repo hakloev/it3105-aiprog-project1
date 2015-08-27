@@ -4,6 +4,7 @@
 
 from datetime import datetime
 import logging
+import os
 
 
 def log(message):
@@ -22,3 +23,20 @@ def debug(message):
     """
 
     logging.debug('\t[%s] %s' % (datetime.now().strftime('%H:%M:%S'), message))
+
+
+def fetch_boards_from_dir():
+    """
+    Returns a list of paths to the pre-defined boards in the boards directory
+    :return: A list of directories
+    """
+
+    boards = []
+    boards_dir = os.path.join(os.path.dirname(__file__), 'boards')
+
+    for board in os.listdir(boards_dir):
+        full_path = os.path.join(boards_dir, board)
+        if os.path.isfile(full_path):
+            boards.append(full_path)
+
+    return boards

@@ -1,4 +1,5 @@
-from math import fabs as abs
+from math import fabs
+
 
 class Board(object):
     """
@@ -6,10 +7,11 @@ class Board(object):
     Also containes the board spesific functions of A*, like get_all_successor_nodes, attach_and_eval eg.
     """
 
-    def __init__(self, board=0):
+    def __init__(self, board):
         """
         Initiating the Board class, with a new grid from file
         """
+
         self.board = board
         grid_data = self.init_grid_from_file()
         self.grid = self.make_grid_from_data(grid_data)
@@ -19,7 +21,7 @@ class Board(object):
         Reades and parses all the data from the text file representing the board
         """
         grid_data = list()
-        with open('./boards/board%d.txt' % self.board, 'r') as f:
+        with open(self.board) as f:
             for i, line in enumerate(f.readlines()):
                 if i != 1:
                     grid_data.append(tuple(map(int, line.strip('()\n').split(','))))
@@ -28,7 +30,6 @@ class Board(object):
         
         return grid_data
 
-   
     @staticmethod
     def make_grid_from_data(data):
         """
@@ -52,7 +53,6 @@ class Board(object):
                     grid[obstacle[1] + y][obstacle[0] + x].char = '#'
                     grid[obstacle[1] + y][obstacle[0] + x].walkable = False
         return grid
-    
 
     def get_all_successor_nodes(self, node):
         """
@@ -71,22 +71,19 @@ class Board(object):
             nodes.append(self.get_node(node.x, node.y + 1))
         return nodes
 
-    
     def attach_and_eval(self, successor, node):
         successor.parent = node
         successor.g = node.g + node.arc_cost
         successor.h = self.heuristic(successor)
         successor.f = successor.g + successor.h
 
-
     def propagate_path(self, node):
-         for child in node.children:
-            if (node.g + node.arc_cost < child.g):
+        for child in node.children:
+            if node.g + node.arc_cost < child.g:
                 child.parent = node
                 child.g = node.g + node.arc_cost
                 child.f = child.g + child.h
                 self.propagate_path(child)
-
 
     def heuristic(self, node):
         """
@@ -95,8 +92,7 @@ class Board(object):
         :param node: The node to perform the heuristic function on
         """
         goal_node = self.get_goal_node()
-        return abs(node.x - goal_node.x) + abs(node.y + goal_node.y) 
-
+        return fabs(node.x - goal_node.x) + fabs(node.y + goal_node.y)
 
     def get_node(self, x, y):
         """
@@ -107,7 +103,6 @@ class Board(object):
         """
         return self.grid[y][x]
 
-
     def get_start_node(self):
         """
         Return the start node for the grid
@@ -117,16 +112,14 @@ class Board(object):
                 if self.grid[y][x].start:
                     return self.grid[y][x]
 
-
     def get_goal_node(self):
         """
         Return the goal node for the grid
         """
-         for y in range(len(self.grid)):
+        for y in range(len(self.grid)):
             for x in range(len(self.grid[y])):
                 if self.grid[y][x].goal:
                     return self.grid[y][x]
-    
  
     def get_grid(self):
         """
@@ -134,7 +127,6 @@ class Board(object):
         """
         return self.grid
 
-   
     def __repr__(self):
         """
         Returns a string representation of the board/grid
@@ -161,17 +153,12 @@ class Node(object):
         self.walkable = True
         self.char = 'U'
 
-
     def __lt__(self, other):
         return self.f < other.f
 
-    
     def __gt__(self, other):
         return self.f > other.f
-
 
     def __repr__(self):
         return "%s" % self.char
         #return "Node((%s, %s), s=%s, g=%s, ac=%s)" % (self.x, self.y, self.start, self.goal, self.arc_cost)
-
-

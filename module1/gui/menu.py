@@ -2,15 +2,18 @@
 #
 # Created by 'myth' on 8/26/15
 
+import os
+
 from tkinter import Menu
 
+from common import fetch_boards_from_dir
 from main import Controller
 
 ### Define menu labels and their commands here
 MENUS = [
-    (u'Boards', [
-        (u'Example 1', Controller.load_board),
-    ]),
+    (u'Boards', sorted([
+        (os.path.basename(b), lambda x=b: Controller.load_board(file_path=x)) for b in fetch_boards_from_dir()
+    ])),
     (u'Solvers', [
         (u'A*', None),
     ]),

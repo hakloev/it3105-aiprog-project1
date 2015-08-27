@@ -99,6 +99,16 @@ class CanvasRenderer(AbstractRenderer):
                     )
                 )
 
+        """
+        a = AStar(
+            'default', # Mode to run the algortithm in. Valid inputs are [default, bfs, dfs]
+            board,
+            board.get_start_node(),
+            board.get_goal_node()
+        )
+        a.agenda_loop()
+        """
+
     def clear(self):
         """
         Clears the content area
