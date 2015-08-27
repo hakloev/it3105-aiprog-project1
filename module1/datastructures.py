@@ -1,13 +1,23 @@
 from math import fabs as abs
 
 class Board(object):
+    """
+    Class coontaining all the logic needed for setting up a board with Node objects
+    Also containes the board spesific functions of A*, like get_all_successor_nodes, attach_and_eval eg.
+    """
 
     def __init__(self, board=0):
+        """
+        Initiating the Board class, with a new grid from file
+        """
         self.board = board
         grid_data = self.init_grid_from_file()
         self.grid = self.make_grid_from_data(grid_data)
     
     def init_grid_from_file(self):
+        """
+        Reades and parses all the data from the text file representing the board
+        """
         grid_data = list()
         with open('./boards/board%d.txt' % self.board, 'r') as f:
             for i, line in enumerate(f.readlines()):
@@ -21,6 +31,11 @@ class Board(object):
    
     @staticmethod
     def make_grid_from_data(data):
+        """
+        Takes in a data argument and returnes a populated grid
+
+        :param data: The list representing the board
+        """
         grid_size = data[0]
         grid = [[Node(x=x, y=y) for x in range(grid_size[0])] for y in range(grid_size[1])]
         
@@ -29,7 +44,7 @@ class Board(object):
         grid[trigger_points[0][1]][trigger_points[0][0]].start = True
         grid[trigger_points[1][1]][trigger_points[1][0]].goal = True
         
-        # Add obstacles to the grid
+        # Add obstacles to the grid and set the nodes to non-walkable
         for obstacle in data[2:]:
             for y in range(obstacle[3]):
                 for x in range(obstacle[2]):
@@ -40,6 +55,11 @@ class Board(object):
     
 
     def get_all_successor_nodes(self, node):
+        """
+        Returnes all adjacent nodes to the node parameter
+        
+        :param node: The node to find adajcent nodes to
+        """
         nodes = []
         if node.x < len(self.grid[0]) - 1: 
             nodes.append(self.get_node(node.x + 1, node.y))
@@ -69,15 +89,29 @@ class Board(object):
 
 
     def heuristic(self, node):
+        """
+        Heuristic function. Here implemented as Manhattan distance
+
+        :param node: The node to perform the heuristic function on
+        """
         goal_node = self.get_goal_node()
         return abs(node.x - goal_node.x) + abs(node.y + goal_node.y) 
 
 
     def get_node(self, x, y):
+        """
+        Returns a node on the given index
+
+        :param x: X coordinate
+        :param y: Y coordinate
+        """
         return self.grid[y][x]
 
 
     def get_start_node(self):
+        """
+        Return the start node for the grid
+        """
         for y in range(len(self.grid)):
             for x in range(len(self.grid[y])):
                 if self.grid[y][x].start:
@@ -85,6 +119,9 @@ class Board(object):
 
 
     def get_goal_node(self):
+        """
+        Return the goal node for the grid
+        """
          for y in range(len(self.grid)):
             for x in range(len(self.grid[y])):
                 if self.grid[y][x].goal:
@@ -92,10 +129,16 @@ class Board(object):
     
  
     def get_grid(self):
+        """
+        Returns the grid itself
+        """
         return self.grid
 
    
     def __repr__(self):
+        """
+        Returns a string representation of the board/grid
+        """
         string = ""
         for row in reversed(self.grid):
             string += "%s\n" % repr(row)
