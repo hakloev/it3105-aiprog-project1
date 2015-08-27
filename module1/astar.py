@@ -27,6 +27,8 @@ class AStar(object):
 
         self.closed_set = set()
 
+        print("# - obstacle, X - closed, O - open, @ - path")
+
 
     def agenda_loop(self):
         """
@@ -39,22 +41,23 @@ class AStar(object):
             node.char = 'X'
 
             if node == self.goal_node:
-                print('------ Done, reached goal node -----')
+                print('--- DONE, REACHED GOAL NODE ---')
                 self.print_path()
                 break
             
             successors = self.board.get_all_successor_nodes(node) 
             for successor in successors:
                 node.children.add(successor)
-                if (successor not in self.closed_set) and (successor not in self.open_set):
-                    self.board.attach_and_eval(successor, node)
-                    self.add_node(successor)
-                    successor.char = 'O'
-                elif (node.g + node.arc_cost < successor.g):
-                    self.board.attach_and_eval(successor, node)
-                    if (successor in self.closed_set):
-                        print('In closed node, propagating path')
-                        self.board.propagate_path(node)
+                if successor.walkable:
+                    if (successor not in self.closed_set) and (successor not in self.open_set):
+                        self.board.attach_and_eval(successor, node)
+                        self.add_node(successor)
+                        successor.char = 'O'
+                    elif (node.g + node.arc_cost < successor.g):
+                        self.board.attach_and_eval(successor, node)
+                        if (successor in self.closed_set):
+                            print('REACHED CLOSED NODE, PROPAGATING PATH')
+                            self.board.propagate_path(node)
 
 
     def add_node(self, node):
@@ -89,15 +92,14 @@ class AStar(object):
             node = node.parent
         
         board = reversed(self.board.get_grid())
-
         for row in board:
             print(row)             
 
     
 if __name__ == '__main__':
-    board = Board()
+    board = Board(0)
     a = AStar(
-        'dfs', # Mode to run the algortithm in. Valid inputs are [default, bfs, dfs] 
+        'default', # Mode to run the algortithm in. Valid inputs are [default, bfs, dfs] 
         board, 
         board.get_start_node(), 
         board.get_goal_node()

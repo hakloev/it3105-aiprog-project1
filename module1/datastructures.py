@@ -2,14 +2,14 @@ from math import fabs as abs
 
 class Board(object):
 
-    def __init__(self):
+    def __init__(self, board=0):
+        self.board = board
         grid_data = self.init_grid_from_file()
         self.grid = self.make_grid_from_data(grid_data)
     
-    @staticmethod
-    def init_grid_from_file():
+    def init_grid_from_file(self):
         grid_data = list()
-        with open('./boards/%s' % 'board1.txt', 'r') as f:
+        with open('./boards/board%d.txt' % self.board, 'r') as f:
             for i, line in enumerate(f.readlines()):
                 if i != 1:
                     grid_data.append(tuple(map(int, line.strip('()\n').split(','))))
@@ -34,6 +34,8 @@ class Board(object):
             for y in range(obstacle[3]):
                 for x in range(obstacle[2]):
                     grid[obstacle[1] + y][obstacle[0] + x].arc_cost = float('Inf')
+                    grid[obstacle[1] + y][obstacle[0] + x].char = '#'
+                    grid[obstacle[1] + y][obstacle[0] + x].walkable = False
         return grid
     
 
@@ -113,6 +115,7 @@ class Node(object):
         self.f = 0
         self.parent = None
         self.children = set()
+        self.walkable = True
         self.char = 'U'
 
 
@@ -122,7 +125,7 @@ class Node(object):
     
     def __gt__(self, other):
         return self.f > other.f
-    
+
 
     def __repr__(self):
         return "%s" % self.char
