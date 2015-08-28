@@ -7,20 +7,23 @@ class Board(object):
     Also contains the board specific functions of A*, like get_all_successor_nodes, attach_and_eval eg.
     """
 
-    def __init__(self, board):
+    def __init__(self, board_path):
         """
         Initiating the Board class, with a new grid from file
         """
-        self.board = board
+        self.board_path = board_path
+        self.grid = None
+        self.start_node = None
+        self.goal_node = None
         grid_data = self.init_grid_from_file()
-        self.grid = self.make_grid_from_data(grid_data)
+        self.make_grid_from_data(grid_data)
     
     def init_grid_from_file(self):
         """
         Reads and parses all the data from the text file representing the board
         """
         grid_data = list()
-        with open(self.board) as f:
+        with open(self.board_path) as f:
             for i, line in enumerate(f.readlines()):
                 if i != 1:
                     grid_data.append(tuple(map(int, line.strip('()\n').split(','))))
@@ -29,28 +32,28 @@ class Board(object):
         
         return grid_data
 
-    @staticmethod
-    def make_grid_from_data(data):
+    def make_grid_from_data(self, data):
         """
         Takes in a data argument and returns a populated grid
         :param data: The list representing the board
         """
         grid_size = data[0]
-        grid = [[Node(x=x, y=y) for x in range(grid_size[0])] for y in range(grid_size[1])]
+        self.grid = [[Node(x=x, y=y) for x in range(grid_size[0])] for y in range(grid_size[1])]
         
         # Add start points to the grid
         trigger_points = data[1]
-        grid[trigger_points[0][1]][trigger_points[0][0]].start = True
-        grid[trigger_points[1][1]][trigger_points[1][0]].goal = True
-        
+        self.start_node = self.get_node(trigger_points[0][0], trigger_points[0][1])
+        self.start_node.start = True
+        self.goal_node = self.get_node(trigger_points[1][0], trigger_points[1][1])
+        self.goal_node.goal = True
+
         # Add obstacles to the grid and set the nodes to non-walkable
         for obstacle in data[2:]:
             for y in range(obstacle[3]):
                 for x in range(obstacle[2]):
-                    grid[obstacle[1] + y][obstacle[0] + x].arc_cost = float('Inf')
-                    grid[obstacle[1] + y][obstacle[0] + x].char = '#'
-                    grid[obstacle[1] + y][obstacle[0] + x].walkable = False
-        return grid
+                    obstacle_node = self.get_node(obstacle[0] + x, obstacle[1] + y)
+                    obstacle_node.arc_cost = float('Inf')
+                    obstacle_node.walkable = False
 
     def get_all_successor_nodes(self, node):
         """
@@ -87,8 +90,7 @@ class Board(object):
         Heuristic function. Here implemented as Manhattan distance
         :param node: The node to perform the heuristic function on
         """
-        goal_node = self.get_goal_node()
-        return fabs(node.x - goal_node.x) + fabs(node.y + goal_node.y)
+        return fabs(node.x - self.goal_node.x) + fabs(node.y + self.goal_node.y)
 
     def get_node(self, x, y):
         """
@@ -102,19 +104,13 @@ class Board(object):
         """
         Return the start node for the grid
         """
-        for y in range(len(self.grid)):
-            for x in range(len(self.grid[y])):
-                if self.grid[y][x].start:
-                    return self.grid[y][x]
+        return self.start_node
 
     def get_goal_node(self):
         """
         Return the goal node for the grid
         """
-        for y in range(len(self.grid)):
-            for x in range(len(self.grid[y])):
-                if self.grid[y][x].goal:
-                    return self.grid[y][x]
+        return self.goal_node
  
     def get_grid(self):
         """
