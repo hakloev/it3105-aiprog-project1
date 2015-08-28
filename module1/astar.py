@@ -1,6 +1,5 @@
 import heapq
 
-from datastructures import Board
 from common import *
 
 
@@ -13,7 +12,7 @@ class AStar(object):
     :param goal_node: The instance of the end node
     """
 
-    def __init__(self, mode='default', board=None, start_node=None, goal_node=None):
+    def __init__(self, mode='best', board=None, start_node=None, goal_node=None):
         """
         Initializing the AStar object with the given parameters 
         """
@@ -24,7 +23,7 @@ class AStar(object):
 
         self.open_set = []
 
-        if self.mode == 'default':
+        if self.mode == 'best':
             heapq.heapify(self.open_set)
 
         self.closed_set = set()
@@ -73,7 +72,7 @@ class AStar(object):
         :param node: The node to append to the list
         """
         return {
-            'default': lambda: heapq.heappush(self.open_set, node),  # Insert to acending heap queue
+            'best': lambda: heapq.heappush(self.open_set, node),  # Insert to acending heap queue
             'bfs': lambda: self.open_set.append(node),  # Insert to back of queue (FIFO)
             'dfs': lambda: self.open_set.insert(0, node)  # Insert to front of queue (LIFO)
         }.get(self.mode)()
@@ -83,7 +82,7 @@ class AStar(object):
         Method to take the right node from the open set depending on the mode
         """
         return {
-            'default': lambda: heapq.heappop(self.open_set),  # Get first element in queue
+            'best': lambda: heapq.heappop(self.open_set),  # Get first element in queue
             'bfs': lambda: self.open_set.pop(0),
             'dfs': lambda: self.open_set.pop(0)
         }.get(self.mode)()
@@ -116,7 +115,6 @@ class AStar(object):
             node = node.parent
         return current_path
 
-
     def get_path_length_from_goal_node(self):
         """
         Returns the total path length from the goal node
@@ -128,17 +126,3 @@ class AStar(object):
             path_length += 1
             node = node.parent
         return path_length
-
-
-if __name__ == '__main__':
-        board = Board("boards/board1.txt")
-        a = AStar(
-            mode='default',
-            board=board,
-            start_node=board.get_start_node(),
-            goal_node=board.get_goal_node()
-        )
-
-        for d in a.agenda_loop():  # The agenda loop returns a generator, so we must iterate over it
-            print(d['path'])
-        a.backtrack_and_print_path_from_node(board.get_goal_node())
