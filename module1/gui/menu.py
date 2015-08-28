@@ -26,7 +26,9 @@ def generate_menus(window):
             (u'A*', lambda x='astar': window.controller.solve(algorithm=x)),
         ]),
         (u'Options', [
-            (u'Mode', None),
+            (u'Best-First', window.controller.set_best_first_mode),
+            (u'BFS', window.controller.set_breadth_first_mode),
+            (u'DFS', window.controller.set_depth_first_mode)
         ])
     ]
 

@@ -32,6 +32,7 @@ class AStar(object):
         """
         The implementation of the A* algorithm. This is the main loop for the algorithm
         """
+
         self.add_node(self.start_node)
         while len(self.open_set):
             node = self.take_node()

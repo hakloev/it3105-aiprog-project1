@@ -4,7 +4,7 @@
 
 from tkinter import Canvas, BOTH, messagebox
 
-from common import log, debug
+from common import debug
 
 
 class AbstractRenderer(object):
@@ -81,18 +81,24 @@ class CanvasRenderer(AbstractRenderer):
         self.clear()
         payload = self.board.grid
 
+        row_range = range(0, self.board_height)
         # If we are drawing using mathematical coordinates (Y-axis reversed)
         if math_coords:
-            payload.reverse()
+            row_range = range(self.board_height - 1, -1, -1)
 
         # Iterate through all nodes, create sprite coords and determine fill color
-        for y in range(0, self.board_height):
+        for y in row_range:
             for x in range(len(payload[y])):
+
+                draw_y = y
+                if math_coords:
+                    draw_y = self.board_height - y
+
                 coords = (
                     x * 15 + 1,
-                    y * 15 + 1,
+                    draw_y * 15 + 1,
                     x * 15 + 16,
-                    y * 15 + 16,
+                    draw_y * 15 + 16,
                 )
 
                 node = self.board.get_node(x, y)
@@ -115,8 +121,6 @@ class CanvasRenderer(AbstractRenderer):
         :param path: A list of Node objects
         """
 
-        print(path)
-
         # Remove all previously rendered path sprites from canvas
         for sprite in self.path_sprites:
             self.canvas.delete(sprite)
@@ -128,8 +132,7 @@ class CanvasRenderer(AbstractRenderer):
             # If we are drawing using mathematical coordinates (y-reversed)
             y = node.y
             if math_coords:
-                pass
-                # y = self.board_height - node.y
+                y = self.board_height - node.y
 
             # Create the coordinates and dimension tuple
             coords = (

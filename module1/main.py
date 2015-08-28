@@ -10,6 +10,8 @@ from gui.window import *
 from gui.menu import *
 from gui.render import *
 
+GUI_UPDATE_INTERVAL = 50
+
 
 class Controller(object):
     """
@@ -87,7 +89,7 @@ class Controller(object):
             i = 0
             for step in a.agenda_loop():
                 self.window.parent.after(
-                    i * 150,
+                    i * GUI_UPDATE_INTERVAL,
                     lambda p=step['path']: self.window.renderer.render_path(p, math_coords=True)
                 )
                 i += 1

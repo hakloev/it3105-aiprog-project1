@@ -82,6 +82,7 @@ class Board(object):
             if node.g + node.arc_cost < child.g:
                 child.parent = node
                 child.g = node.g + node.arc_cost
+                child.h = self.heuristic(child)
                 child.f = child.g + child.h
                 self.propagate_path(child)
 
@@ -90,7 +91,8 @@ class Board(object):
         Heuristic function. Here implemented as Manhattan distance
         :param node: The node to perform the heuristic function on
         """
-        return fabs(node.x - self.goal_node.x) + fabs(node.y + self.goal_node.y)
+
+        return abs(node.x - self.goal_node.x) + abs(node.y - self.goal_node.y)
 
     def get_node(self, x, y):
         """
@@ -153,4 +155,4 @@ class Node(object):
     def __repr__(self):
         #return "%s" % self.char
         #return "Node((%s, %s), s=%s, g=%s, ac=%s)" % (self.x, self.y, self.start, self.goal, self.arc_cost)
-        return "Node(%s, %s)" % (self.x, self.y)
+        return "Node(%d, %d, F: %d, G: %d, H: %d)" % (self.x, self.y, self.f, self.g, self.h)
