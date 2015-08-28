@@ -1,4 +1,4 @@
-from math import fabs
+# -*- coding: utf-8 -*-
 
 
 class Board(object):
@@ -11,12 +11,17 @@ class Board(object):
         """
         Initiating the Board class, with a new grid from file
         """
+
         self.board_path = board_path
         self.grid = None
         self.start_node = None
         self.goal_node = None
-        grid_data = self.init_grid_from_file()
-        self.make_grid_from_data(grid_data)
+
+        if board_path:
+            grid_data = self.init_grid_from_file()
+            self.make_grid_from_data(grid_data)
+        else:
+            self.grid = [[]]
     
     def init_grid_from_file(self):
         """

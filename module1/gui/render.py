@@ -6,6 +6,9 @@ from tkinter import Canvas, BOTH, messagebox
 
 from common import debug
 
+GUI_UPDATE_INTERVAL = 50  # ms
+BOARD_CELL_SIZE = 10  # pixels
+
 
 class AbstractRenderer(object):
     """
@@ -51,7 +54,7 @@ class CanvasRenderer(AbstractRenderer):
     The CanvasRenderer can draw figures and grids on a canvas
     """
 
-    def __init__(self, window, width=800, height=580):
+    def __init__(self, window, width=600, height=580):
         """
         Constructor
         :param window: Reference to the main window instance
@@ -62,7 +65,7 @@ class CanvasRenderer(AbstractRenderer):
         super().__init__(window)
 
         self.canvas = Canvas(self.window, width=width, height=height)
-        self.canvas.pack(fill=BOTH, expand=1)
+        self.canvas.grid(row=0, column=0, sticky='NE', padx=BOARD_CELL_SIZE)
         self.path_sprites = set()
 
     def render_board(self, math_coords=False):
@@ -95,10 +98,10 @@ class CanvasRenderer(AbstractRenderer):
                     draw_y = self.board_height - y
 
                 coords = (
-                    x * 15 + 1,
-                    draw_y * 15 + 1,
-                    x * 15 + 16,
-                    draw_y * 15 + 16,
+                    x * BOARD_CELL_SIZE + 1,
+                    draw_y * BOARD_CELL_SIZE + 1,
+                    x * BOARD_CELL_SIZE + BOARD_CELL_SIZE + 1,
+                    draw_y * BOARD_CELL_SIZE + BOARD_CELL_SIZE + 1,
                 )
 
                 node = self.board.get_node(x, y)
@@ -115,11 +118,14 @@ class CanvasRenderer(AbstractRenderer):
                     fill=fill_color
                 )
 
-    def render_path(self, path, math_coords=False):
+    def render_path(self, path, math_coords=False, **kwargs):
         """
         Renders path nodes on top of the map, after clearing previously rendered path nodes
         :param path: A list of Node objects
         """
+
+        open_set = kwargs['open_set_size']
+        closed_set = kwargs['closed_set_size']
 
         # Remove all previously rendered path sprites from canvas
         for sprite in self.path_sprites:
@@ -136,10 +142,10 @@ class CanvasRenderer(AbstractRenderer):
 
             # Create the coordinates and dimension tuple
             coords = (
-                node.x * 15 + 1,
-                y * 15 + 1,
-                node.x * 15 + 16,
-                y * 15 + 16
+                node.x * BOARD_CELL_SIZE + 1,
+                y * BOARD_CELL_SIZE + 1,
+                node.x * BOARD_CELL_SIZE + BOARD_CELL_SIZE + 1,
+                y * BOARD_CELL_SIZE + BOARD_CELL_SIZE + 1
             )
 
             fill_color = '#994499'
@@ -152,12 +158,24 @@ class CanvasRenderer(AbstractRenderer):
                 )
             )
 
+            self.window.master.controller.references['path_length'].set(
+                'Path length: %d' % len(path)
+            )
+            self.window.master.controller.references['open_set_size'].set(
+                'OpenSet size: %d' % open_set
+            )
+            self.window.master.controller.references['closed_set_size'].set(
+                'ClosedSet size: %d' % closed_set
+            )
+
     def clear(self):
         """
         Clears the content area
         """
 
         self.canvas.delete('all')
+        self.window.master.controller.clear_timers()
+        self.window.master.controller.clear_stats()
 
     def destruct(self):
         """

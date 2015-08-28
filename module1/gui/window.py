@@ -2,7 +2,8 @@
 #
 # Created by 'myth' on 8/26/15
 
-from tkinter import Frame, BOTH, Menu, messagebox
+from tkinter import *
+from tkinter import messagebox
 
 from common import log, debug
 
@@ -12,13 +13,13 @@ class Main(Frame):
     Main window
     """
 
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, *args, **kwargs):
         """
         Main window constructor. Takes in a root widget as an argument.
         """
 
         # Invoke superclass constructor with root widget
-        Frame.__init__(self, parent, background='white')
+        Frame.__init__(self, parent, *args, **kwargs)
 
         menu = Menu(parent)
 
@@ -29,6 +30,42 @@ class Main(Frame):
 
         parent.config(menu=menu)
         parent.title('A*')
+
+        self.content_area = LabelFrame(self, text='Visualization', name='visualization')
+        self.content_area.grid(
+            row=0,
+            column=0,
+            rowspan=2,
+            sticky='W',
+            padx=5,
+            pady=5,
+            ipadx=5,
+            ipady=5
+        )
+
+        self.options_area = LabelFrame(self, text='Options', name='options')
+        self.options_area.grid(
+            row=0,
+            column=1,
+            sticky='NE',
+            padx=5,
+            pady=5,
+            ipadx=5,
+            ipady=5
+        )
+
+        self.stats_area = LabelFrame(self, text='Stats', name='stats')
+        self.stats_area.grid(
+            row=1,
+            column=1,
+            sticky='NW',
+            padx=5,
+            pady=5,
+            ipadx=5,
+            ipady=5
+        )
+
+        stats_label = Label(self.stats_area, text='')
 
     def set_window_size(self, x=1280, y=600):
         """
@@ -71,7 +108,7 @@ class Main(Frame):
 
         if self.renderer:
             self.renderer.render_board(*args, **kwargs)
-            self.pack(fill=BOTH)
+            #self.pack(fill=BOTH)
 
             debug('Main.render() called')
         else:
