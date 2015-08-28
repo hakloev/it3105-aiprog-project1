@@ -41,6 +41,11 @@ class AStar(object):
 
             if node == self.goal_node:
                 log('REACHED GOAL NODE')
+                yield {
+                    'open_set': self.open_set,
+                    'closed_set': self.closed_set,
+                    'path': self.get_path_from_node(node)
+                }
                 break
 
             successors = self.board.get_all_successor_nodes(node) 
@@ -127,7 +132,7 @@ class AStar(object):
 
 
 if __name__ == '__main__':
-        board = Board("boards/board4.txt")
+        board = Board("boards/board0.txt")
         a = AStar(
             mode='default',
             board=board,
@@ -137,3 +142,4 @@ if __name__ == '__main__':
 
         for d in a.agenda_loop():  # The agenda loop returns a generator, so we must iterate over it
             print(d['path'])
+        a.backtrack_and_print_path_from_node(board.get_goal_node())
