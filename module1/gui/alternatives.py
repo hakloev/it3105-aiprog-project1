@@ -89,3 +89,9 @@ def generate_stats(frame, *args, **kwargs):
     closed_set_size_label = Label(frame, textvariable=closed_set_size)
     frame.master.controller.references['closed_set_size'] = closed_set_size
     closed_set_size_label.grid(row=2, padx=5, pady=5, ipadx=5, ipady=5, sticky='W')
+
+    total_set_size = StringVar(frame)
+    total_set_size.set('Total set size: 0')
+    total_set_size_label = Label(frame, textvariable=total_set_size)
+    frame.master.controller.references['total_set_size'] = total_set_size
+    total_set_size_label.grid(row=3, padx=5, pady=5, ipadx=5, ipady=5, sticky='W')

@@ -167,6 +167,9 @@ class CanvasRenderer(AbstractRenderer):
             self.window.master.controller.references['closed_set_size'].set(
                 'ClosedSet size: %d' % closed_set
             )
+            self.window.master.controller.references['total_set_size'].set(
+                'Total set size: %d' % closed_set
+            )
 
     def clear(self):
         """
