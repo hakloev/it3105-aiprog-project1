@@ -1,5 +1,4 @@
 import heapq
-import copy
 
 from datastructures import Board
 from common import *
@@ -113,7 +112,7 @@ class AStar(object):
         """
         current_path = []
         while node.parent:
-            current_path.append(copy.deepcopy(node))
+            current_path.append(node)
             node = node.parent
         return current_path
 
@@ -132,7 +131,7 @@ class AStar(object):
 
 
 if __name__ == '__main__':
-        board = Board("boards/board0.txt")
+        board = Board("boards/board1.txt")
         a = AStar(
             mode='default',
             board=board,
