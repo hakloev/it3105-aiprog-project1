@@ -3,22 +3,21 @@ from math import fabs
 
 class Board(object):
     """
-    Class coontaining all the logic needed for setting up a board with Node objects
-    Also containes the board spesific functions of A*, like get_all_successor_nodes, attach_and_eval eg.
+    Class containing all the logic needed for setting up a board with Node objects
+    Also contains the board specific functions of A*, like get_all_successor_nodes, attach_and_eval eg.
     """
 
     def __init__(self, board):
         """
         Initiating the Board class, with a new grid from file
         """
-
         self.board = board
         grid_data = self.init_grid_from_file()
         self.grid = self.make_grid_from_data(grid_data)
     
     def init_grid_from_file(self):
         """
-        Reades and parses all the data from the text file representing the board
+        Reads and parses all the data from the text file representing the board
         """
         grid_data = list()
         with open(self.board) as f:
@@ -33,8 +32,7 @@ class Board(object):
     @staticmethod
     def make_grid_from_data(data):
         """
-        Takes in a data argument and returnes a populated grid
-
+        Takes in a data argument and returns a populated grid
         :param data: The list representing the board
         """
         grid_size = data[0]
@@ -56,9 +54,8 @@ class Board(object):
 
     def get_all_successor_nodes(self, node):
         """
-        Returnes all adjacent nodes to the node parameter
-        
-        :param node: The node to find adajcent nodes to
+        Returns all adjacent nodes to the node parameter
+        :param node: The node to find adjacent nodes to
         """
         nodes = []
         if node.x < len(self.grid[0]) - 1: 
@@ -88,7 +85,6 @@ class Board(object):
     def heuristic(self, node):
         """
         Heuristic function. Here implemented as Manhattan distance
-
         :param node: The node to perform the heuristic function on
         """
         goal_node = self.get_goal_node()
@@ -97,7 +93,6 @@ class Board(object):
     def get_node(self, x, y):
         """
         Returns a node on the given index
-
         :param x: X coordinate
         :param y: Y coordinate
         """
@@ -160,5 +155,6 @@ class Node(object):
         return self.f > other.f
 
     def __repr__(self):
-        return "%s" % self.char
+        #return "%s" % self.char
         #return "Node((%s, %s), s=%s, g=%s, ac=%s)" % (self.x, self.y, self.start, self.goal, self.arc_cost)
+        return "Node(%s, %s)" % (self.x, self.y)

@@ -106,7 +106,6 @@ class CanvasRenderer(AbstractRenderer):
             board.get_start_node(),
             board.get_goal_node()
         )
-        a.agenda_loop()
         """
 
     def clear(self):
