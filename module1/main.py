@@ -84,8 +84,13 @@ class Controller(object):
                 mode=self.mode
             )
 
+            i = 0
             for step in a.agenda_loop():
-                self.window.parent.after(500, lambda p=step['path']: self.window.renderer.render_path(p))
+                self.window.parent.after(
+                    i * 150,
+                    lambda p=step['path']: self.window.renderer.render_path(p, math_coords=True)
+                )
+                i += 1
 
 if __name__ == '__main__':
     """

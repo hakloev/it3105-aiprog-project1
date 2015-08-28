@@ -115,6 +115,8 @@ class CanvasRenderer(AbstractRenderer):
         :param path: A list of Node objects
         """
 
+        print(path)
+
         # Remove all previously rendered path sprites from canvas
         for sprite in self.path_sprites:
             self.canvas.delete(sprite)
@@ -126,7 +128,8 @@ class CanvasRenderer(AbstractRenderer):
             # If we are drawing using mathematical coordinates (y-reversed)
             y = node.y
             if math_coords:
-                y = self.board_height - node.y
+                pass
+                # y = self.board_height - node.y
 
             # Create the coordinates and dimension tuple
             coords = (
@@ -136,7 +139,7 @@ class CanvasRenderer(AbstractRenderer):
                 y * 15 + 16
             )
 
-            fill_color = '#25DD40'
+            fill_color = '#994499'
 
             # Create sprite and add to path sprite cache
             self.path_sprites.add(
