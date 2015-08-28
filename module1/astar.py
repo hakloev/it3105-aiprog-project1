@@ -1,4 +1,5 @@
 import heapq
+import copy
 
 from datastructures import Board
 from common import *
@@ -58,7 +59,8 @@ class AStar(object):
             # Yields the current open- and closed set to the function that called the agenda_loop
             yield {
                 'open_set': self.open_set,
-                'closed_set': self.closed_set
+                'closed_set': self.closed_set,
+                'path': self.get_path_from_node(node)
             }
 
     def add_node(self, node):
@@ -82,7 +84,7 @@ class AStar(object):
             'dfs': lambda: self.open_set.pop(0)
         }.get(self.mode)()
 
-    def backtrack_path_from_node(self, node):
+    def backtrack_and_print_path_from_node(self, node):
         """
         This method backtracks the path from a given node, and prints the path
         It also prints the path length and total number of generated nodes
@@ -95,6 +97,21 @@ class AStar(object):
             path_length += 1
             node = node.parent
         print('--- REACHED GOAL NODE (%d, %d) ---' % (path_length, (len(self.open_set) + len(self.closed_set))))
+
+    @staticmethod
+    def get_path_from_node(node):
+        """
+        This method returns a list containing a deepcopy of all node objects in the current path
+        To be used with for instance the GUI visualisation
+        :param node:
+        :return:
+        """
+        current_path = []
+        while node.parent:
+            current_path.append(copy.deepcopy(node))
+            node = node.parent
+        return current_path
+
 
     def get_path_length_from_goal_node(self):
         """
@@ -119,6 +136,4 @@ if __name__ == '__main__':
         )
 
         for d in a.agenda_loop():  # The agenda loop returns a generator, so we must iterate over it
-            # print(d)
-            continue
-        a.backtrack_path_from_node(board.get_goal_node())  # Print the solution path
+            print(d['path'])
