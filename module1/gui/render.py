@@ -4,6 +4,8 @@
 
 from tkinter import Canvas, BOTH, messagebox
 
+from common import log, debug
+
 
 class AbstractRenderer(object):
     """
@@ -17,6 +19,7 @@ class AbstractRenderer(object):
         """
         self.window = window
         self.board = None
+        self.board_height = 0
 
     def set_board(self, board):
         """
@@ -25,6 +28,7 @@ class AbstractRenderer(object):
         """
 
         self.board = board
+        self.board_height = len(self.board.grid)
 
     def destruct(self):
         """
@@ -59,11 +63,14 @@ class CanvasRenderer(AbstractRenderer):
 
         self.canvas = Canvas(self.window, width=width, height=height)
         self.canvas.pack(fill=BOTH, expand=1)
+        self.path_sprites = set()
 
-    def render(self, math_coords=False):
+    def render_board(self, math_coords=False):
         """
         Renders the data
         """
+
+        debug('CanvasRenderer.render_board() called')
 
         if not self.board:
             messagebox.showerror(
@@ -72,41 +79,72 @@ class CanvasRenderer(AbstractRenderer):
             )
 
         self.clear()
-        payload = self.board
+        payload = self.board.grid
 
-        start = 0
-        end = len(payload)
-
+        # If we are drawing using mathematical coordinates (Y-axis reversed)
         if math_coords:
-            start = end
-            end = 0
+            payload.reverse()
 
-        for y in range(start, end):
+        # Iterate through all nodes, create sprite coords and determine fill color
+        for y in range(0, self.board_height):
             for x in range(len(payload[y])):
                 coords = (
-                    x * 30 + 2,
-                    y * 30 + 2,
-                    x * 30 + 32,
-                    y * 30 + 32,
+                    x * 15 + 1,
+                    y * 15 + 1,
+                    x * 15 + 16,
+                    y * 15 + 16,
                 )
+
+                node = self.board.get_node(x, y)
+                fill_color = '#FFFFFF'
+                if not node.walkable:
+                    fill_color = '#000000'
+                elif node.start:
+                    fill_color = '#4040FF'
+                elif node.goal:
+                    fill_color = '#40FF40'
 
                 self.canvas.create_rectangle(
                     *coords,
-                    fill=self.rgb_to_color(
-                        x * (255 // (x + 1)),
-                        y * (255 // (y + 1)),
-                        100
-                    )
+                    fill=fill_color
                 )
 
+    def render_path(self, path, math_coords=False):
         """
-        a = AStar(
-            'default', # Mode to run the algortithm in. Valid inputs are [default, bfs, dfs]
-            board,
-            board.get_start_node(),
-            board.get_goal_node()
-        )
+        Renders path nodes on top of the map, after clearing previously rendered path nodes
+        :param path: A list of Node objects
         """
+
+        # Remove all previously rendered path sprites from canvas
+        for sprite in self.path_sprites:
+            self.canvas.delete(sprite)
+
+        self.path_sprites.clear()
+
+        # Add sprites for current path
+        for node in reversed(path):
+            # If we are drawing using mathematical coordinates (y-reversed)
+            y = node.y
+            if math_coords:
+                y = self.board_height - node.y
+
+            # Create the coordinates and dimension tuple
+            coords = (
+                node.x * 15 + 1,
+                y * 15 + 1,
+                node.x * 15 + 16,
+                y * 15 + 16
+            )
+
+            fill_color = '#25DD40'
+
+            # Create sprite and add to path sprite cache
+            self.path_sprites.add(
+                self.canvas.create_rectangle(
+                    *coords,
+                    fill=fill_color
+                )
+            )
 
     def clear(self):
         """
