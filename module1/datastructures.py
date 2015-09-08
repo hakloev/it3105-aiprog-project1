@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from math import sqrt
 
 
 class Board(object):
@@ -7,12 +8,13 @@ class Board(object):
     Also contains the board specific functions of A*, like get_all_successor_nodes, attach_and_eval eg.
     """
 
-    def __init__(self, board_path):
+    def __init__(self, board_path, mode='manhattan'):
         """
         Initiating the Board class, with a new grid from file
         """
 
         self.board_path = board_path
+        self.mode = mode
         self.grid = None
         self.start_node = None
         self.goal_node = None
@@ -96,8 +98,11 @@ class Board(object):
         Heuristic function. Here implemented as Manhattan distance
         :param node: The node to perform the heuristic function on
         """
-
-        return abs(node.x - self.goal_node.x) + abs(node.y - self.goal_node.y)
+        
+        return {
+            'manhattan': lambda: abs(node.x - self.goal_node.x) + abs(node.y - self.goal_node.y),
+            'euclidean': lambda: sqrt(pow((node.x - self.goal_node.x), 2) + pow((node.y - self.goal_node.y), 2))
+        }.get(self.mode)()
 
     def get_node(self, x, y):
         """
