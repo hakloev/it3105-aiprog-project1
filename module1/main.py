@@ -87,6 +87,9 @@ class Controller(object):
                     'Update interval must be in milliseconds'
                 )
 
+        if 'heuristic' in self.references:
+            self.window.renderer.board.mode = self.references['heuristic'].get()
+
         if algorithm == 'astar':
             a = AStar(
                 board=self.window.renderer.board,

@@ -24,7 +24,7 @@ class Board(object):
             self.make_grid_from_data(grid_data)
         else:
             self.grid = [[]]
-    
+
     def init_grid_from_file(self):
         """
         Reads and parses all the data from the text file representing the board
@@ -36,7 +36,7 @@ class Board(object):
                     grid_data.append(tuple(map(int, line.strip('()\n').split(','))))
                 else:
                     grid_data.append([tuple(map(int, el.strip('()').split(','))) for el in line.rstrip().split(' ')])
-        
+
         return grid_data
 
     def make_grid_from_data(self, data):
@@ -46,7 +46,7 @@ class Board(object):
         """
         grid_size = data[0]
         self.grid = [[Node(x=x, y=y) for x in range(grid_size[0])] for y in range(grid_size[1])]
-        
+
         # Add start points to the grid
         trigger_points = data[1]
         self.start_node = self.get_node(trigger_points[0][0], trigger_points[0][1])
@@ -68,7 +68,7 @@ class Board(object):
         :param node: The node to find adjacent nodes to
         """
         nodes = []
-        if node.x < len(self.grid[0]) - 1: 
+        if node.x < len(self.grid[0]) - 1:
             nodes.append(self.get_node(node.x + 1, node.y))
         if node.y > 0:
             nodes.append(self.get_node(node.x, node.y - 1))
@@ -123,7 +123,7 @@ class Board(object):
         Return the goal node for the grid
         """
         return self.goal_node
- 
+
     def get_grid(self):
         """
         Returns the grid itself
