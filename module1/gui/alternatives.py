@@ -15,6 +15,11 @@ ASTAR_OPTIONS = [
     'dfs'
 ]
 
+HEURISTIC = [
+    'manhattan',
+    'euclidean'
+]
+
 
 def generate_menus(window):
     """
@@ -58,12 +63,20 @@ def generate_options(frame, *args, **kwargs):
     options = OptionMenu(frame, mode_var, *tuple(ASTAR_OPTIONS))
     options.grid(row=0, column=1, sticky='E')
 
+    heuristic_label = Label(frame, text='Heuristic:')
+    heuristic_label.grid(row=1, padx=5, pady=5, ipadx=5, ipady=5, sticky='W')
+
+    heuristic_var = StringVar(master=frame, value=HEURISTIC[0], name='heuristic')
+    frame.master.controller.references['heuristic'] = heuristic_var
+    h_options = OptionMenu(frame, heuristic_var, *tuple(HEURISTIC))
+    h_options.grid(row=1, column=1, sticky='E')
+
     update_interval_label = Label(frame, text='Update interval (ms):')
-    update_interval_label.grid(row=1, padx=5, pady=5, ipadx=5, ipady=5, sticky='W')
+    update_interval_label.grid(row=2, padx=5, pady=5, ipadx=5, ipady=5, sticky='W')
 
     update_interval = Entry(frame)
     update_interval.insert(0, str(GUI_UPDATE_INTERVAL))
-    update_interval.grid(row=1, column=1, padx=5, pady=5, ipadx=5, ipady=5, sticky='E')
+    update_interval.grid(row=2, column=1, padx=5, pady=5, ipadx=5, ipady=5, sticky='E')
     frame.master.controller.references['update_interval'] = update_interval
 
 
