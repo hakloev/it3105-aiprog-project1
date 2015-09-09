@@ -16,6 +16,7 @@ if __name__ == '__main__':
 
     g = Graph()
 
-    node_set = g.read_graph_from_file('graphs/graph01.txt')
+    node_cache = g.read_graph_from_file('graphs/graph01.txt')
 
-    print(node_set)
+    for node_index, node in node_cache.items():
+        print(('Node index %d : {} with children: {}' % node_index).format(node, node.children))

@@ -190,6 +190,21 @@ class Graph(object):
         :return: A set of nodes
         """
 
+        node_cache = {}
+
+        # Read contents from specified file path
         with open(file_path) as g:
+            # Retrieve the node and edge count from first line of file
             nodes, edges = map(int, g.readline().split())
 
+            # Retrieve all node coordinates
+            for node in range(nodes):
+                i, x, y = map(float, g.readline().split())
+                node_cache[int(i)] = Node(x, y)
+
+            for edge in range(edges):
+                from_node, to_node = map(int, g.readline().split())
+                node_cache[from_node].children.add(node_cache[to_node])
+                node_cache[to_node].children.add(node_cache[from_node])
+
+        return node_cache
