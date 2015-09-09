@@ -98,7 +98,7 @@ class Board(object):
         Heuristic function. Here implemented as Manhattan distance
         :param node: The node to perform the heuristic function on
         """
-        
+
         return {
             'manhattan': lambda: abs(node.x - self.goal_node.x) + abs(node.y - self.goal_node.y),
             'euclidean': lambda: sqrt(pow((node.x - self.goal_node.x), 2) + pow((node.y - self.goal_node.y), 2))
