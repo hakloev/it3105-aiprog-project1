@@ -166,3 +166,29 @@ class Node(object):
         #return "%s" % self.char
         #return "Node((%s, %s), s=%s, g=%s, ac=%s)" % (self.x, self.y, self.start, self.goal, self.arc_cost)
         return "Node(%d, %d, F: %d, G: %d, H: %d)" % (self.x, self.y, self.f, self.g, self.h)
+
+
+class Graph(object):
+    """
+    Jazzing the graph since 1985
+    """
+
+    def __init__(self):
+        """
+        Constructor
+        :return: Awyiss
+        """
+
+        self.start_node = None
+        self.end_node = None
+
+    @staticmethod
+    def read_graph_from_file(file_path):
+        """
+        Reads input data from a file and generates a linked set of nodes
+        :param file_path: Path to the file that is to be read into memory
+        :return: A set of nodes
+        """
+
+        with open(file_path) as g:
+            nodes, edges = map(int, g.readline().split())
