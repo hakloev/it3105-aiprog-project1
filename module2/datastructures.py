@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from math import sqrt
 
+from common import fetch_boards_from_dir
+
 
 class Board(object):
     """
@@ -183,6 +185,10 @@ class Graph(object):
         self.end_node = None
 
     @staticmethod
+    def read_all_graphs():
+        return [Graph.read_graph_from_file(fp) for fp in fetch_boards_from_dir('graphs')]
+
+    @staticmethod
     def read_graph_from_file(file_path):
         """
         Reads input data from a file and generates a linked set of nodes
@@ -202,6 +208,7 @@ class Graph(object):
                 i, x, y = map(float, g.readline().split())
                 node_cache[int(i)] = Node(x, y)
 
+            # Connect all nodes together based on edge declarations in file
             for edge in range(edges):
                 from_node, to_node = map(int, g.readline().split())
                 node_cache[from_node].children.add(node_cache[to_node])
