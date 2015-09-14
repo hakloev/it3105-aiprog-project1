@@ -141,7 +141,6 @@ class Board(object):
 
 
 class Node(object):
-
     def __init__(self, x=None, y=None):
         self.x = x
         self.y = y
@@ -157,12 +156,16 @@ class Node(object):
         self.char = 'U'
 
     def __lt__(self, other):
+        if self.f == other.f:
+            return self.h < other.h
         return self.f < other.f
 
     def __gt__(self, other):
+        if self.f == other.f:
+            return self.h > other.h
         return self.f > other.f
 
     def __repr__(self):
-        #return "%s" % self.char
+        # return "%s" % self.char
         #return "Node((%s, %s), s=%s, g=%s, ac=%s)" % (self.x, self.y, self.start, self.goal, self.arc_cost)
         return "Node(%d, %d, F: %d, G: %d, H: %d)" % (self.x, self.y, self.f, self.g, self.h)
