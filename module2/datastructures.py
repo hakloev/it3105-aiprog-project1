@@ -144,7 +144,8 @@ class Board(object):
 
 class Node(object):
 
-    def __init__(self, x=None, y=None):
+    def __init__(self, index=None, x=None, y=None):
+        self.index = index
         self.x = x
         self.y = y
         self.arc_cost = 1
@@ -175,15 +176,6 @@ class Graph(object):
     Jazzing the graph since 1985
     """
 
-    def __init__(self):
-        """
-        Constructor
-        :return: Awyiss
-        """
-
-        self.start_node = None
-        self.end_node = None
-
     @staticmethod
     def read_all_graphs():
         return [Graph.read_graph_from_file(fp) for fp in fetch_boards_from_dir('graphs')]
@@ -206,7 +198,7 @@ class Graph(object):
             # Retrieve all node coordinates
             for node in range(nodes):
                 i, x, y = map(float, g.readline().split())
-                node_cache[int(i)] = Node(x, y)
+                node_cache[int(i)] = Node(index=i, x=x, y=y)
 
             # Connect all nodes together based on edge declarations in file
             for edge in range(edges):
@@ -214,4 +206,4 @@ class Graph(object):
                 node_cache[from_node].children.add(node_cache[to_node])
                 node_cache[to_node].children.add(node_cache[from_node])
 
-        return node_cache
+        return node_cache.values()
