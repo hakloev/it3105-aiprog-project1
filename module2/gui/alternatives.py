@@ -36,6 +36,8 @@ def generate_menus(window):
         ])),
         (u'Solvers', [
             (u'A*', lambda x='astar': window.controller.solve(algorithm=x)),
+            (u'DEBUG', window.controller.debug),
+            (u'Add random node', window.controller.add_random_node)
         ])
     ]
 

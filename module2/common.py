@@ -25,7 +25,7 @@ def debug(message):
     logging.debug('\t[%s] %s' % (datetime.now().strftime('%H:%M:%S'), message))
 
 
-def fetch_boards_from_dir(rootdir='boards'):
+def fetch_boards_from_dir(rootdir='graphs'):
     """
     Returns a list of paths to the pre-defined boards in the boards directory
     :return: A list of directories

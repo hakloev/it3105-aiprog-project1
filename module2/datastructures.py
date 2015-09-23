@@ -132,6 +132,7 @@ class Node(object):
         self.children = set()
         self.walkable = True
         self.char = 'U'
+        self.full_repr_mode = True
 
     def __lt__(self, other):
         return self.f < other.f
@@ -140,7 +141,10 @@ class Node(object):
         return self.f > other.f
 
     def __repr__(self):
-        return "Node(%d, (%d, %d))" % (self.index, self.x, self.y)
+        if self.full_repr_mode:
+            return 'Node(%d, %d, F: %d, G: %d, H: %d)' % (self.x, self.y, self.f, self.g, self.h)
+        else:
+            return '%d (%d, %d)' % (self.index, self.x, self.y)
 
 
 class Constraint(object):
