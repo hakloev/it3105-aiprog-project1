@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from math import sqrt
-
+from common import make_func
 from common import fetch_boards_from_dir
 
 
@@ -146,6 +146,7 @@ class Node(object):
 
     def __init__(self, index=None, x=None, y=None):
         self.index = index
+        self.name = 'n' + str(int(index))
         self.x = x
         self.y = y
         self.arc_cost = 1
@@ -166,10 +167,24 @@ class Node(object):
         return self.f > other.f
 
     def __repr__(self):
-        #return "%s" % self.char
-        #return "Node((%s, %s), s=%s, g=%s, ac=%s)" % (self.x, self.y, self.start, self.goal, self.arc_cost)
-        return "Node(%d, %d, F: %d, G: %d, H: %d)" % (self.x, self.y, self.f, self.g, self.h)
+        return "Node(%d, (%d, %d))" % (self.index, self.x, self.y)
 
+
+class Constraint(object):
+
+    def __init__(self, function=None, edges=None):
+        self.function = function
+        self.edges = edges
+
+    def get_constraint_function(self):
+        var_names = [str(n.name) for n in self.edges]
+        return make_func(var_names, self.function)
+
+    def __repr__(self):
+        return "Constraint(function: %s, edges: %s" % (self.function, self.edges)
+
+    def __str__(self):
+        return "Constraint(function: %s, edges: %s" % (self.function, self.edges)
 
 class Graph(object):
     """
