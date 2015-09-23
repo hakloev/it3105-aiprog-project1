@@ -29,7 +29,6 @@ class Main(Frame):
         self.controller = controller
 
         parent.config(menu=menu)
-        parent.title('A*')
 
         self.content_area = LabelFrame(self, text='Visualization', name='visualization')
         self.content_area.grid(
@@ -37,10 +36,10 @@ class Main(Frame):
             column=0,
             rowspan=2,
             sticky='W',
-            padx=5,
-            pady=5,
-            ipadx=5,
-            ipady=5
+            padx=0,
+            pady=0,
+            ipadx=0,
+            ipady=0
         )
 
         self.options_area = LabelFrame(self, text='Options', name='options')
@@ -108,8 +107,6 @@ class Main(Frame):
 
         if self.renderer:
             self.renderer.render_graph(*args, **kwargs)
-            #self.pack(fill=BOTH)
-
             debug('Main.render() called')
         else:
             messagebox.showerror(

@@ -28,7 +28,7 @@ if __name__ == '__main__':
     main.controller.set_window(main)
 
     # Set the initial renderer
-    main.set_renderer(GraphRenderer(main.content_area, figsize=(6, 6)))
+    main.set_renderer(GraphRenderer(main.content_area, figsize=(8, 7)))
 
     # Register menubar components
     generate_menus(main)

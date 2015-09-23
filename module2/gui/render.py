@@ -215,7 +215,7 @@ class GraphRenderer(AbstractRenderer):
 
         # Initialize the FigureCanvas
         self.canvas = FigureCanvasTkAgg(self.figure, master=window)
-        self.canvas.get_tk_widget().grid(row=0, column=0, sticky='NE')
+        self.canvas.get_tk_widget().pack(fill=BOTH, expand=True)
         self.canvas.show()
 
     def add_nodes_to_graph(self, nodes):
@@ -261,7 +261,7 @@ class GraphRenderer(AbstractRenderer):
             ax=self.axis,
             node_size=40,
             with_labels=self.show_labels,
-            c=[n.color for n in self.graph.nodes()]
+            node_color=[n.index for n in self.graph.nodes()]
         )
         self.canvas.draw()
 
