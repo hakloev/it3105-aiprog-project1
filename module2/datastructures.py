@@ -158,6 +158,7 @@ class Node(object):
         self.children = set()
         self.walkable = True
         self.char = 'U'
+        self.full_repr_mode = True
 
     def __lt__(self, other):
         return self.f < other.f
@@ -166,9 +167,10 @@ class Node(object):
         return self.f > other.f
 
     def __repr__(self):
-        #return "%s" % self.char
-        #return "Node((%s, %s), s=%s, g=%s, ac=%s)" % (self.x, self.y, self.start, self.goal, self.arc_cost)
-        return "Node(%d, %d, F: %d, G: %d, H: %d)" % (self.x, self.y, self.f, self.g, self.h)
+        if self.full_repr_mode:
+            return 'Node(%d, %d, F: %d, G: %d, H: %d)' % (self.x, self.y, self.f, self.g, self.h)
+        else:
+            return '%d' % self.index
 
 
 class Graph(object):

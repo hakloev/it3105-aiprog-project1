@@ -107,7 +107,7 @@ class Main(Frame):
         """
 
         if self.renderer:
-            self.renderer.render_board(*args, **kwargs)
+            self.renderer.render_graph(*args, **kwargs)
             #self.pack(fill=BOTH)
 
             debug('Main.render() called')

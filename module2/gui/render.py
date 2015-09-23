@@ -2,6 +2,11 @@
 #
 # Created by 'myth' on 8/26/15
 
+import matplotlib
+matplotlib.use('tkAgg')
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+import networkx as nx
 from tkinter import Canvas, BOTH, messagebox
 
 from common import debug
@@ -187,3 +192,82 @@ class CanvasRenderer(AbstractRenderer):
 
         self.canvas.delete('all')
         self.canvas.destroy()
+
+
+class GraphRenderer(AbstractRenderer):
+    """
+    GraphRenderer
+    """
+
+    def __init__(self, window, figsize=(5, 4)):
+        super(GraphRenderer, self).__init__(window)
+
+        # Settings for the renderer
+        self.show_labels = False
+
+        # Hook up a matplotlib figure and subplot for networkx and FigureCanvas to talk to
+        self.figure = plt.figure(figsize=figsize)
+        self.axis = self.figure.add_subplot(111)
+        plt.axis('off')
+
+        # Initialize a networkx graph
+        self.graph = nx.Graph()
+
+        # Initialize the FigureCanvas
+        self.canvas = FigureCanvasTkAgg(self.figure, master=window)
+        self.canvas.get_tk_widget().grid(row=0, column=0, sticky='NE')
+        self.canvas.show()
+
+    def add_nodes_to_graph(self, nodes):
+        """
+        Helper method that takes in our node objects and injects it into the networkx graph object
+        """
+
+        self.graph.add_nodes_from(nodes)
+        for node in nodes:
+            for child in node.children:
+                self.graph.add_edge(node, child)
+
+    def clear(self):
+        """
+        Clears the canvas
+        """
+
+        self.graph.clear()
+        self.axis.cla()
+        self.window.master.controller.clear_timers()
+        self.window.master.controller.clear_stats()
+
+    def destruct(self):
+        """
+        Detroys this renderer
+        """
+
+        self.graph = None
+        self.canvas.get_tk_widget().delete('all')
+        self.canvas.get_tk_widget().destroy()
+
+    def render_graph(self):
+        """
+        Renders the graph
+        """
+
+        self.axis.cla()
+        plt.axis('off')
+        pos = nx.spring_layout(self.graph)
+        nx.draw_networkx(
+            self.graph,
+            pos=pos,
+            ax=self.axis,
+            node_size=40,
+            with_labels=self.show_labels,
+            c=[n.color for n in self.graph.nodes()]
+        )
+        self.canvas.draw()
+
+    def render_current_state(self):
+        """
+        Renders the current state of the graph
+        """
+
+        pass
