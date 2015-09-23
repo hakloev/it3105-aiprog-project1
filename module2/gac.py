@@ -3,19 +3,27 @@
 # Created by 'hakloev' on 9/9/15
 
 from datastructures import *
-from common import *
-import inspect
 
 colors = ['red', 'green', 'blue', 'black', 'yellow', 'purple', 'white']
 
 
 class GAC(object):
 
-    def __init__(self):
+    def __init__(self, nodes=None, k=4):
         self.variables = []
         self.domains = {}
         self.constraints = {}
         self.queue = []
+
+        global colors
+        colors_to_k = colors[:k]
+
+        for node in nodes:
+            self.add_variable(node, colors_to_k)
+
+        for node in nodes:
+            for child in node.children:
+                self.add_constraint_one_way(node, child)
 
     def initialize(self):
         for variable in self.variables:
@@ -41,8 +49,6 @@ class GAC(object):
 
     def revise(self, variable, constraint):
         revised = False
-        #print('Revise called on (%s, %s)' % (variable, constraint))
-        #print('Constraints are %s' % self.constraints[variable])
 
         constraint_function = constraint.get_constraint_function()
 
@@ -61,23 +67,6 @@ class GAC(object):
         return revised
 
     def rerun(self):
-        pass
+        print("Rerun")
 
 
-if __name__ == "__main__":
-    nodes = Graph.read_graph_from_file('graphs/graph01.txt')
-    K = 4
-    colors = colors[:K]
-
-    g = GAC()
-
-    for node in nodes:
-        g.add_variable(node, colors)
-
-    for node in nodes:
-        for child in node.children:
-            g.add_constraint_one_way(node, child)
-
-
-    g.initialize()
-    g.domain_filtering_loop()

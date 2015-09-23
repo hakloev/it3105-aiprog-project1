@@ -1,7 +1,7 @@
 import heapq
 
 from common import *
-
+from astar_board import AStarBoard
 
 class AStar(object):    
     """
@@ -12,14 +12,18 @@ class AStar(object):
     :param goal_node: The instance of the end node
     """
 
-    def __init__(self, mode='best', board=None, start_node=None, goal_node=None):
+    def __init__(self, mode='best', board=None):
         """
         Initializing the AStar object with the given parameters 
         """
+        if not isinstance(board, AStarBoard):
+            raise Exception("Board must be an instance of AStarBoard")
+
         self.mode = mode
-        self.board = board
-        self.start_node = start_node
-        self.goal_node = goal_node
+        self.board = board  # initial gac_state
+
+        self.start_node = self.board.get_start_node()
+        self.goal_node = self.board.get_goal_node()
 
         self.open_set = []
 
@@ -50,15 +54,14 @@ class AStar(object):
             successors = self.board.get_all_successor_nodes(node) 
             for successor in successors:
                 node.children.add(successor)
-                if successor.walkable:
-                    if (successor not in self.closed_set) and (successor not in self.open_set):
-                        self.board.attach_and_eval(successor, node)
-                        self.add_node(successor)
-                    elif node.g + node.arc_cost < successor.g:
-                        self.board.attach_and_eval(successor, node)
-                        if successor in self.closed_set:
-                            debug('REACHED CLOSED NODE, PROPAGATING PATH')
-                            self.board.propagate_path(node)
+                if (successor not in self.closed_set) and (successor not in self.open_set):
+                    self.board.attach_and_eval(successor, node)
+                    self.add_node(successor)
+                elif node.g + node.arc_cost < successor.g:
+                    self.board.attach_and_eval(successor, node)
+                    if successor in self.closed_set:
+                        debug('REACHED CLOSED NODE, PROPAGATING PATH')
+                        self.board.propagate_path(node)
 
             # Yields the current open- and closed set to the function that called the agenda_loop
             yield {
@@ -66,6 +69,21 @@ class AStar(object):
                 'closed_set': self.closed_set,
                 'path': self.get_path_from_node(node)
             }
+
+    def attach_and_eval(self, successor, node):
+        successor.parent = node
+        successor.g = node.g + node.arc_cost
+        successor.h = self.board.heuristic(successor)
+        successor.f = successor.g + successor.h
+
+    def propagate_path(self, node):
+        for child in node.children:
+            if node.g + node.arc_cost < child.g:
+                child.parent = node
+                child.g = node.g + node.arc_cost
+                child.h = self.board.heuristic(child)
+                child.f = child.g + child.h
+                self.propagate_path(child)
 
     def add_node(self, node):
         """
