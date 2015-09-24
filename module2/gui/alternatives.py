@@ -10,15 +10,15 @@ from common import fetch_boards_from_dir
 from gui.render import GUI_UPDATE_INTERVAL
 
 ASTAR_OPTIONS = [
-    'best',
-    'bfs',
-    'dfs'
+    'best'
 ]
 
 HEURISTIC = [
-    'manhattan',
-    'euclidean'
+    'domain_sum_distance'
 ]
+
+DEFAULT_GAC_CONSTRAINT = 'x != y'
+DEFAULT_K_VALUE = 4
 
 
 def generate_menus(window):
@@ -38,9 +38,7 @@ def generate_menus(window):
              lambda fp=board: window.controller.load_board(file_path=fp)) for board in fetch_boards_from_dir()
         ])),
         (u'Solvers', [
-            (u'A*', lambda x='astar': window.controller.solve(algorithm=x)),
-            (u'DEBUG', window.controller.debug),
-            (u'Add random node', window.controller.add_random_node)
+            (u'A*GAC', lambda x='astar_gac': window.controller.solve(algorithm=x)),
         ]),
     ]
 
@@ -83,6 +81,22 @@ def generate_options(frame, *args, **kwargs):
     update_interval.insert(0, str(GUI_UPDATE_INTERVAL))
     update_interval.grid(row=2, column=1, padx=5, pady=5, ipadx=5, ipady=5, sticky='E')
     frame.master.controller.references['update_interval'] = update_interval
+
+    k_value_label = Label(frame, text='K value:')
+    k_value_label.grid(row=3, padx=5, pady=5, ipadx=5, ipady=5, sticky='W')
+
+    k_value = Entry(frame)
+    k_value.insert(0, str(DEFAULT_K_VALUE))
+    k_value.grid(row=3, column=1, padx=5, pady=5, ipadx=5, ipady=5, sticky='E')
+    frame.master.controller.references['k_value'] = k_value
+
+    constraint_formula_label = Label(frame, text='Constraint formula:')
+    constraint_formula_label.grid(row=4, padx=5, pady=5, ipadx=5, ipady=5, sticky='W')
+
+    constraint_formula = Entry(frame)
+    constraint_formula.insert(0, DEFAULT_GAC_CONSTRAINT)
+    constraint_formula.grid(row=4, column=1, padx=5, pady=5, ipadx=5, ipady=5, sticky='E')
+    frame.master.controller.references['constraint_formula'] = constraint_formula
 
 
 def generate_stats(frame, *args, **kwargs):

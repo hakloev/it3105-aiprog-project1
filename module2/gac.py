@@ -44,6 +44,7 @@ class GAC(object):
     def domain_filtering_loop(self):
         while self.queue:
             todo_revise = self.queue.pop(0)
+            print(repr(todo_revise))
             if self.revise(*todo_revise):
                 print("The state was revised, adding all other constraints for node %s" % todo_revise[0])
                 for constraint in self.constraints[todo_revise[0].index]:
@@ -83,8 +84,3 @@ class GAC(object):
                     self.queue.append((j, constraint))
                     print("Adding constaint from %s to %s (%d)" % (j, constraint.from_node, len(self.queue)))
         self.domain_filtering_loop()
-
-
-
-
-
