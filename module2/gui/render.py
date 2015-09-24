@@ -259,7 +259,7 @@ class GraphRenderer(AbstractRenderer):
         if 'nodelist' in kwargs:
             colors = [n.index for n in kwargs['nodelist']]
         else:
-            colors = [n.index for n in self.graph.nodes]
+            colors = [n.index for n in self.graph.nodes()]
 
         nx.draw_networkx(
             self.graph,
