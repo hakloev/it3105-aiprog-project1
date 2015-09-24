@@ -14,16 +14,31 @@ class AStarGAC(AStarBoard):
         self.initial_state = gac
 
     def get_start_node(self):
-        pass
+        return self.initial_state
 
     def get_goal_node(self):
         pass
 
     def get_all_successor_nodes(self, node):
-        pass
+        successor_nodes = []
+
+        for node, domain in node.domains.items():
+            print(node, domain)
+            
 
     def heuristic(self):
+        """"
+        From the problem description:
+
+        A simple heuristic involves calculating the size of each domain minus one,
+        then summing all those values to produce a very rough estimate of the distance
+        to the goal. Devising a good, and admissible, heuristic, is more of a challenge,
+        since it is very hard to estimate the extent of domain reduction incurred by any
+        run of the Domain-filtering loop.
+        """
         pass
+
+    # Maybe implement arc_cost here?
 
 
 if __name__ == '__main__':
@@ -34,9 +49,10 @@ if __name__ == '__main__':
 
     astar_gac = AStarGAC(gac=gac_state)
 
-    solver = AStar(board=astar_gac)
+    solver = AStar(mode='best', board=astar_gac)
 
-    solver.agenda_loop()
+    for state in solver.agenda_loop():
+        print(state)
 
 
 

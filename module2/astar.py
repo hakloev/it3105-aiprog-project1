@@ -3,6 +3,7 @@ import heapq
 from common import *
 from astar_board import AStarBoard
 
+
 class AStar(object):    
     """
     A A* algorithm class. Takes the mode, board, start- and goal-node
@@ -31,12 +32,12 @@ class AStar(object):
             heapq.heapify(self.open_set)
 
         self.closed_set = set()
+        print('A* initiated with valid problem instance')
 
     def agenda_loop(self):
         """
         The implementation of the A* algorithm. This is the main loop for the algorithm
         """
-
         self.add_node(self.start_node)
         while len(self.open_set):
             node = self.take_node()

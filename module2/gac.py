@@ -3,6 +3,7 @@
 # Created by 'hakloev' on 9/9/15
 
 from datastructures import *
+from common import *
 
 colors = ['red', 'green', 'blue', 'black', 'yellow', 'purple', 'white']
 
@@ -37,7 +38,7 @@ class GAC(object):
 
     def add_constraint_one_way(self, x, y):
         if y not in self.constraints[x]:
-            self.constraints[x].append(Constraint(x.name + ' != ' + y.name, [x, y]))
+            self.constraints[x].append(Constraint(x.name + ' != ' + y.name, [y]))
 
     def domain_filtering_loop(self):
         while self.queue:
@@ -53,16 +54,17 @@ class GAC(object):
         constraint_function = constraint.get_constraint_function()
 
         if len(constraint.edges) >= 2:
-            for i in self.domains[constraint.edges[0]]:
-                for j in self.domains[constraint.edges[1]]:
+            for i in self.domains[variable]:
+                for j in self.domains[constraint.edges[0]]:
                     if not constraint_function(i, j):
                         self.domains[variable].remove(j)
                         if len(self.domains[variable]) == 0:
-                            print("Empty domain reached, this is a dead end")
+                            debug("Empty domain reached, this is a dead end")
                             break
                         revised = True
                     else:
-                        break  # or break?
+                        break
+
 
         return revised
 
