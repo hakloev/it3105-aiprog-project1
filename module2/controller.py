@@ -67,8 +67,9 @@ class MainController(object):
             )
 
         self.window.renderer.clear()
-        nodes = Graph.read_graph_from_file(kwargs['file_path'])
-        self.window.renderer.add_nodes_to_graph(nodes)
+        # Load the graph from file, and provide networkx graph instance for rendering
+        Graph.read_graph_from_file(kwargs['file_path'], networkx_graph=self.window.renderer.graph)
+
         self.window.renderer.render_graph()
 
     def solve(self, algorithm='astar'):
@@ -139,4 +140,13 @@ class MainController(object):
 
         print(g.nodes())
 
-        self.window.renderer.render_graph()
+        # Replace draw_only with a tuple containing a nodeset and edgeset to only draw those
+        self.window.renderer.render_graph(nodelist=[n], edgelist=[(n, g.nodes()[0]), (n, g.nodes()[2])])
+
+    def exit(self):
+        """
+        Destroys the window
+        :return:
+        """
+
+        self.window.parent.quit()

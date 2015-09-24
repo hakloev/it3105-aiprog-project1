@@ -30,7 +30,10 @@ def generate_menus(window):
 
     ### Define menu labels and their commands here
     menus = [
-        (u'Boards', sorted([
+        (u'File', [
+            (u'Exit', window.controller.exit)
+        ]),
+        (u'Graphs', sorted([
             (os.path.basename(board),
              lambda fp=board: window.controller.load_board(file_path=fp)) for board in fetch_boards_from_dir()
         ])),
@@ -38,7 +41,7 @@ def generate_menus(window):
             (u'A*', lambda x='astar': window.controller.solve(algorithm=x)),
             (u'DEBUG', window.controller.debug),
             (u'Add random node', window.controller.add_random_node)
-        ])
+        ]),
     ]
 
     # Iterate over the main menu components and their actions
