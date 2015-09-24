@@ -54,12 +54,12 @@ class AStar(object):
 
             successors = self.board.get_all_successor_nodes(node) 
             for successor in successors:
-                node.children.add(successor)
+                #node.children.add(successor)
                 if (successor not in self.closed_set) and (successor not in self.open_set):
-                    self.board.attach_and_eval(successor, node)
+                    self.attach_and_eval(successor, node)
                     self.add_node(successor)
                 elif node.g + node.arc_cost < successor.g:
-                    self.board.attach_and_eval(successor, node)
+                    self.attach_and_eval(successor, node)
                     if successor in self.closed_set:
                         debug('REACHED CLOSED NODE, PROPAGATING PATH')
                         self.board.propagate_path(node)

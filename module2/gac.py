@@ -15,6 +15,7 @@ class GAC(object):
         self.domains = {}
         self.constraints = {}
         self.queue = []
+        self.is_contradiction = False
 
         global colors
         colors_to_k = colors[:k]
@@ -28,17 +29,17 @@ class GAC(object):
 
     def initialize(self):
         for variable in self.variables:
-            for constraint in self.constraints[variable]:
+            for constraint in self.constraints[variable.index]:
                 self.queue.append((variable, constraint))
 
     def add_variable(self, variable, domain):
         self.variables.append(variable)
         self.domains[variable] = list(domain)
-        self.constraints[variable] = []
+        self.constraints[variable.index] = []
 
     def add_constraint_one_way(self, x, y):
-        if y not in self.constraints[x]:
-            self.constraints[x].append(Constraint(x.name + ' != ' + y.name, [y]))
+        if y not in self.constraints[x.index]:
+            self.constraints[x.index].append(Constraint(x.name + ' != ' + y.name, [y]))
 
     def domain_filtering_loop(self):
         while self.queue:
@@ -59,16 +60,21 @@ class GAC(object):
                     if not constraint_function(i, j):
                         self.domains[variable].remove(j)
                         if len(self.domains[variable]) == 0:
-                            debug("Empty domain reached, this is a dead end")
+                            self.is_contradiction = True
                             break
                         revised = True
                     else:
                         break
 
-
         return revised
 
-    def rerun(self):
-        print("Rerun")
+    def run_again(self, variable):
+        for constraint in self.constraints[variable.index]:
+            for node in constraint.edges:
+                if node != variable:
+                    print(node)
+
+
+
 
 
