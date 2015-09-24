@@ -209,6 +209,7 @@ class GraphRenderer(AbstractRenderer):
         self.figure = plt.figure(figsize=figsize)
         self.axis = self.figure.add_subplot(111)
         plt.axis('off')
+        self.figure.tight_layout()
 
         # Initialize a networkx graph
         self.graph = nx.Graph()
@@ -247,7 +248,7 @@ class GraphRenderer(AbstractRenderer):
         self.canvas.get_tk_widget().delete('all')
         self.canvas.get_tk_widget().destroy()
 
-    def render_graph(self):
+    def render_graph(self, **kwargs):
         """
         Renders the graph
         """
@@ -255,13 +256,18 @@ class GraphRenderer(AbstractRenderer):
         self.axis.cla()
         plt.axis('off')
         pos = nx.spring_layout(self.graph)
+        if 'nodelist' in kwargs:
+            colors = [n.index for n in kwargs['nodelist']]
+        else:
+            colors = [n.index for n in self.graph.nodes]
+
         nx.draw_networkx(
             self.graph,
             pos=pos,
-            ax=self.axis,
             node_size=40,
             with_labels=self.show_labels,
-            node_color=[n.index for n in self.graph.nodes()]
+            node_color=colors,
+            **kwargs
         )
         self.canvas.draw()
 

@@ -139,4 +139,13 @@ class MainController(object):
 
         print(g.nodes())
 
-        self.window.renderer.render_graph()
+        # Replace draw_only with a tuple containing a nodeset and edgeset to only draw those
+        self.window.renderer.render_graph(nodelist=[n], edgelist=[(n, g.nodes()[0]), (n, g.nodes()[2])])
+
+    def exit(self):
+        """
+        Destroys the window
+        :return:
+        """
+
+        self.window.parent.quit()
