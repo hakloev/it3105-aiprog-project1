@@ -67,8 +67,9 @@ class MainController(object):
             )
 
         self.window.renderer.clear()
-        nodes = Graph.read_graph_from_file(kwargs['file_path'])
-        self.window.renderer.add_nodes_to_graph(nodes)
+        # Load the graph from file, and provide networkx graph instance for rendering
+        Graph.read_graph_from_file(kwargs['file_path'], networkx_graph=self.window.renderer.graph)
+
         self.window.renderer.render_graph()
 
     def solve(self, algorithm='astar'):

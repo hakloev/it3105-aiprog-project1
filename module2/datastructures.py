@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from math import sqrt
+
 from common import make_func
 from common import fetch_boards_from_dir
+from common import debug
 
 
 class Graph(object):
@@ -11,10 +12,10 @@ class Graph(object):
 
     @staticmethod
     def read_all_graphs():
-        return [Graph.read_graph_from_file(fp) for fp in fetch_boards_from_dir('graphs')]
+        return [Graph.read_graph_from_file(fp) for fp in fetch_boards_from_dir()]
 
     @staticmethod
-    def read_graph_from_file(file_path):
+    def read_graph_from_file(file_path, networkx_graph=None):
         """
         Reads input data from a file and generates a linked set of nodes
         :param file_path: Path to the file that is to be read into memory
@@ -27,11 +28,17 @@ class Graph(object):
         with open(file_path) as g:
             # Retrieve the node and edge count from first line of file
             nodes, edges = map(int, g.readline().split())
+            debug('NetworkX Graph instance provided, adding nodes directly to graph.')
 
             # Retrieve all node coordinates
             for node in range(nodes):
                 i, x, y = map(float, g.readline().split())
-                node_cache[int(i)] = Node(index=i, x=x, y=y)
+                n = Node(index=int(i), x=x, y=y)
+                node_cache[int(i)] = n
+
+                # Add the node to the networkx graph
+                if networkx_graph is not None:
+                    networkx_graph.add_node(n)
 
             # Connect all nodes together based on edge declarations in file
             for edge in range(edges):
@@ -39,24 +46,53 @@ class Graph(object):
                 node_cache[from_node].children.add(node_cache[to_node])
                 node_cache[to_node].children.add(node_cache[from_node])
 
+                # Add the edge in the networkx graph
+                if networkx_graph is not None:
+                    networkx_graph.add_edge(node_cache[from_node], node_cache[to_node])
+
         return node_cache.values()
 
 
 class Node(object):
+    """
+    Basic Node object that keeps the foundational properties of a Node
+    that might be used in some sort of state or graph representation
+    """
 
     def __init__(self, index=None, x=None, y=None):
+        """
+        Constructor
+        """
+
         self.index = index
-        self.name = 'n' + str(int(index))
         self.x = x
         self.y = y
+        self.parent = None
+        self.children = set()
+
+    def __repr__(self):
+        """
+        String representation of the BasicNode object
+        """
+
+        return 'Node %d (%d, %d)' % (self.index, self.x, self.y)
+
+
+class AstarNode(Node):
+    """
+    The AstarNode is a specialization of a Node, that in addition keeps track of arc-cost, start and goal flags,
+    as well as F, G and H values.
+    """
+
+    def __init__(self, index=None, x=None, y=None):
+        super(AstarNode, self).__init__(index=index, x=x, y=y)
+        self.name = 'n' + str(int(index))
         self.arc_cost = 1
         self.start = None
         self.goal = None
         self.g = 0
         self.h = 0
         self.f = 0
-        self.parent = None
-        self.children = set()
         self.walkable = True
         self.char = 'U'
         self.full_repr_mode = True
@@ -67,9 +103,12 @@ class Node(object):
     def __gt__(self, other):
         return self.f > other.f
 
+    def __eq__(self, other):
+        return self.f == other.f
+
     def __repr__(self):
         if self.full_repr_mode:
-            return 'Node(%d, %d, F: %d, G: %d, H: %d)' % (self.x, self.y, self.f, self.g, self.h)
+            return 'AstarNode(%d, %d, F: %d, G: %d, H: %d)' % (self.x, self.y, self.f, self.g, self.h)
         else:
             return '%d (%d, %d)' % (self.index, self.x, self.y)
 

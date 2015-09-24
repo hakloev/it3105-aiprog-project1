@@ -224,6 +224,8 @@ class GraphRenderer(AbstractRenderer):
         Helper method that takes in our node objects and injects it into the networkx graph object
         """
 
+        debug('Adding %d nodes to NetworkX Graph instance' % len(nodes))
+
         self.graph.add_nodes_from(nodes)
         for node in nodes:
             for child in node.children:
@@ -256,10 +258,18 @@ class GraphRenderer(AbstractRenderer):
         self.axis.cla()
         plt.axis('off')
         pos = nx.spring_layout(self.graph)
+
         if 'nodelist' in kwargs:
-            colors = [n.index for n in kwargs['nodelist']]
+            nodelist = kwargs['nodelist']
         else:
-            colors = [n.index for n in self.graph.nodes()]
+            nodelist = self.graph.nodes()
+
+        try:
+            debug('Rendering graph. Nodelist length is: %d and of type %s' % (len(nodelist), type(nodelist[0]) or '?'))
+        except IndexError:
+            pass
+
+        colors = [n.index for n in nodelist]
 
         nx.draw_networkx(
             self.graph,
