@@ -45,38 +45,43 @@ class GAC(object):
         while self.queue:
             todo_revise = self.queue.pop(0)
             if self.revise(*todo_revise):
-                print("I AM MODIFIED")
-                for i in self.constraints[todo_revise[0].index]:
-                    if i != todo_revise[1]:
-                        self.queue.append((todo_revise[0], i))
+                print("The state was revised, adding all other constraints for node %s" % todo_revise[0])
+                for constraint in self.constraints[todo_revise[0].index]:
+                    if constraint != todo_revise[1]: # const not eq current const
+                        print("Found constraint from %s to %s" % (todo_revise[0], constraint))
+                        self.queue.append((todo_revise[0], constraint))
 
     def revise(self, variable, constraint):
+        print("Doing revise from %s to %s (%d)" % (variable, constraint.edges[0], len(self.queue)))
+
         revised = False
 
         constraint_function = constraint.get_constraint_function()
 
         if len(constraint.edges) >= 1:
-            for i in self.domains[variable]:
-                for j in self.domains[constraint.edges[0]]:
-                    if variable is constraint.from_node:
-                        break
-                    if not constraint_function(i, j):
-                        self.domains[variable].remove(j)
-                        print("Removing a color: %s" % self.domains[variable])
+            for node_domain_variable in self.domains[variable]:
+                for constraint_domain_variable in self.domains[constraint.edges[0]]:
+                    if not constraint_function(node_domain_variable, constraint_domain_variable):
+                        print("Removing color %s from %s" % (node_domain_variable, self.domains[variable]))
+                        self.domains[variable].remove(node_domain_variable)
+                        revised = True
                         if len(self.domains[variable]) == 0:
-                            print("I AM A FUCKING CONTRABASS")
+                            print("This state is a contrabass!")
                             self.is_contradiction = True
                             break
-                        revised = True
                     else:
                         break
         return revised
 
     def run_again(self, variable):
+        print("Running GAC again on variable %s" % variable)
         for constraint in self.constraints[variable.index]:
-            for node in constraint.edges:
-                if node != variable:
-                    self.queue.append((variable, constraint))
+            print("Checking for constraint %s" % constraint)
+            for j in constraint.edges:
+                print("Checking for edge %s" % j)
+                if variable.index != j.index:
+                    self.queue.append((j, constraint))
+                    print("Adding constaint from %s to %s (%d)" % (j, constraint.from_node, len(self.queue)))
         self.domain_filtering_loop()
 
 
