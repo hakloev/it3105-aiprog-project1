@@ -257,7 +257,7 @@ class GraphRenderer(AbstractRenderer):
 
         self.axis.cla()
         plt.axis('off')
-        pos = nx.spring_layout(self.graph)
+        pos = nx.random_layout(self.graph)
 
         if 'nodelist' in kwargs:
             nodelist = kwargs['nodelist']
@@ -281,9 +281,13 @@ class GraphRenderer(AbstractRenderer):
         )
         self.canvas.draw()
 
-    def render_current_state(self):
+    def generate_colors(self, gac_node):
         """
-        Renders the current state of the graph
+        Generates a list of colors that correlate to the nodes in the NetworkX Graph instance
+        :return: A list of color strings
         """
 
-        pass
+        return [
+            gac_node.gac.domains[node.index] if len(gac_node.gac.domains[node.index]) == 1 else 'black'
+            for node in self.graph.nodes()
+        ]
