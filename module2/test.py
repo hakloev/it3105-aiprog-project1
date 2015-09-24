@@ -14,10 +14,11 @@ if __name__ == '__main__':
     main method
     """
 
-    g = Graph()
+    nodes = Graph.read_graph_from_file('graphs/graph01.txt')
 
-    node_caches = g.read_all_graphs()
+    gac_state = GAC(nodes)
 
-    for node_cache in node_caches:
-        for node_index, node in node_cache.items():
-            print(('Node index %d : {} with children: {}' % node_index).format(node, node.children))
+    solver = AStar(board=gac_state)
+
+    solver.agenda_loop()
+
