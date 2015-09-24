@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
     astar_gac = AStarGAC(gac=gac_state)
 
-    solver = AStar(mode='best', board=astar_gac)
+    solver = AStar(board=astar_gac)
 
     for state in solver.agenda_loop():
         print(state)

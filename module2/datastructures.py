@@ -123,7 +123,7 @@ class GACNode(AstarNode):
         self.gac = gac_state
 
     def __repr__(self):
-        return 'GACNode(is_contra: %s)' % (self.gac.is_contradiction)
+        return 'GACNode(is_contra: %s)' % self.gac.is_contradiction
 
 
 class Constraint(object):

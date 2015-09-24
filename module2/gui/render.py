@@ -288,6 +288,6 @@ class GraphRenderer(AbstractRenderer):
         """
 
         return [
-            gac_node.gac.domains[node.index] if len(gac_node.gac.domains[node.index]) == 1 else 'black'
+            gac_node.gac.domains[node.index][0] if len(gac_node.gac.domains[node.index]) == 1 else 'black'
             for node in self.graph.nodes()
         ]

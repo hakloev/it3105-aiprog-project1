@@ -44,6 +44,7 @@ class GAC(object):
     def domain_filtering_loop(self):
         while self.queue:
             todo_revise = self.queue.pop(0)
+            print(repr(todo_revise))
             if self.revise(*todo_revise):
                 print("I AM MODIFIED")
                 for i in self.constraints[todo_revise[0].index]:
@@ -78,8 +79,3 @@ class GAC(object):
                 if node != variable:
                     self.queue.append((variable, constraint))
         self.domain_filtering_loop()
-
-
-
-
-
