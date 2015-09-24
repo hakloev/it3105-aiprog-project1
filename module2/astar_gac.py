@@ -23,18 +23,21 @@ class AStarGAC(AStarBoard):
     def get_all_successor_nodes(self, gac_state):
         successor_nodes = []
 
-        for node, domain in gac_state.domains.items():
+        for node, domain in gac_state.gac.domains.items():
             if len(domain) > 1:
+                #print("GIANT DOMAIN: %s" % domain)
                 for domain_element in range(len(domain)):
+                    #print("DOMAIN ELEMENT IS %s" % domain_element)
                     child_state = deepcopy(gac_state)
-                    child_state.domains[node] = [domain[domain_element]]
-                    child_state.run_again(node)
-                    if not child_state.is_contradiction:
+                    child_state.gac.domains[node] = [domain[domain_element]]
+                    #print("SET DOMAIN TO %s" % child_state.gac.domains[node])
+                    child_state.gac.run_again(node)
+                    if not child_state.gac.is_contradiction:
+                        #print("Not contradiction")
                         successor_nodes.append(child_state)
-        return successor_nodes
+                return successor_nodes
 
-
-    def heuristic(self):
+    def heuristic(self, node):
         """"
         From the problem description:
 
@@ -44,7 +47,8 @@ class AStarGAC(AStarBoard):
         since it is very hard to estimate the extent of domain reduction incurred by any
         run of the Domain-filtering loop.
         """
-        pass
+        #print(sum((len(domain_list) - 1) for domain_list in node.gac.domains.values()))
+        return sum((len(domain_list) - 1) for domain_list in node.gac.domains.values())
 
     # Maybe implement arc_cost here?
 
@@ -61,6 +65,8 @@ if __name__ == '__main__':
 
     for state in solver.agenda_loop():
         print(state)
+
+    print("Done")
 
 
 

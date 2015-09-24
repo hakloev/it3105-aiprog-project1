@@ -52,8 +52,10 @@ class AStar(object):
                 }
                 break
 
-            successors = self.board.get_all_successor_nodes(node) 
+            successors = self.board.get_all_successor_nodes(node)
+            #print(successors)
             for successor in successors:
+                #print(successor)
                 #node.children.add(successor)
                 if (successor not in self.closed_set) and (successor not in self.open_set):
                     self.attach_and_eval(successor, node)

@@ -70,6 +70,9 @@ class Node(object):
         self.parent = None
         self.children = set()
 
+    def __str__(self):
+        return 'N' + str(self.index)
+
     def __repr__(self):
         """
         String representation of the BasicNode object
@@ -86,7 +89,6 @@ class AstarNode(Node):
 
     def __init__(self, index=None, x=None, y=None):
         super(AstarNode, self).__init__(index=index, x=x, y=y)
-        self.name = 'n' + str(int(index))
         self.arc_cost = 1
         self.start = None
         self.goal = None
@@ -98,13 +100,14 @@ class AstarNode(Node):
         self.full_repr_mode = True
 
     def __lt__(self, other):
+        if self.f == other.f:
+            return self.h < other.h
         return self.f < other.f
 
     def __gt__(self, other):
+        if self.f == other.f:
+            return self.h > other.h
         return self.f > other.f
-
-    def __eq__(self, other):
-        return self.f == other.f
 
     def __repr__(self):
         if self.full_repr_mode:
@@ -113,14 +116,25 @@ class AstarNode(Node):
             return '%d (%d, %d)' % (self.index, self.x, self.y)
 
 
+class GACNode(AstarNode):
+
+    def __init__(self, gac_state=None):
+        super(GACNode, self).__init__(index=0, x=0, y=0)
+        self.gac = gac_state
+
+    def __repr__(self):
+        return 'GACNode(is_contra: %s)' % (self.gac.is_contradiction)
+
+
 class Constraint(object):
 
-    def __init__(self, function=None, edges=None):
+    def __init__(self, function=None, from_node=None, edges=None):
         self.function = function
+        self.from_node = from_node
         self.edges = edges
 
     def get_constraint_function(self):
-        var_names = [str(n.name) for n in self.edges]
+        var_names = [str(self.from_node)] + [str(n) for n in self.edges]
         return make_func(var_names, self.function)
 
     def __repr__(self):
