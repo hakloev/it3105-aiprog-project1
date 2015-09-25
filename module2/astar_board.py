@@ -19,7 +19,7 @@ class AStarBoard(metaclass=abc.ABCMeta):
         pass
 
     @abstractmethod
-    def heuristic(self):
+    def heuristic(self, node):
         pass
 
 

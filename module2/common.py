@@ -6,6 +6,18 @@ from datetime import datetime
 import logging
 import os
 
+DEBUG = False
+COLORMAP = {
+    0: 'red',
+    1: 'blue',
+    2: 'green',
+    3: 'cyan',
+    4: 'yellow',
+    5: 'orange',
+    6: 'teal',
+    7: 'pink'
+}
+
 
 def log(message):
     """

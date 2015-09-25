@@ -15,7 +15,7 @@ class Graph(object):
         return [Graph.read_graph_from_file(fp) for fp in fetch_boards_from_dir()]
 
     @staticmethod
-    def read_graph_from_file(file_path, networkx_graph=None):
+    def read_graph_from_file(file_path, networkx_graph=None, lightweight=False):
         """
         Reads input data from a file and generates a linked set of nodes
         :param file_path: Path to the file that is to be read into memory
@@ -23,12 +23,14 @@ class Graph(object):
         """
 
         node_cache = {}
+        edge_set = []
 
         # Read contents from specified file path
         with open(file_path) as g:
             # Retrieve the node and edge count from first line of file
             nodes, edges = map(int, g.readline().split())
-            debug('NetworkX Graph instance provided, adding nodes directly to graph.')
+            if networkx_graph:
+                debug('NetworkX Graph instance provided, adding nodes directly to graph.')
 
             # Retrieve all node coordinates
             for node in range(nodes):
@@ -46,11 +48,17 @@ class Graph(object):
                 node_cache[from_node].children.add(node_cache[to_node])
                 node_cache[to_node].children.add(node_cache[from_node])
 
+                # This is nice to have
+                edge_set.append((from_node, to_node))
+
                 # Add the edge in the networkx graph
                 if networkx_graph is not None:
                     networkx_graph.add_edge(node_cache[from_node], node_cache[to_node])
 
-        return node_cache.values()
+        if lightweight:
+            return [n.index for n in node_cache.values()], edge_set
+        else:
+            return node_cache.values(), edge_set
 
 
 class Node(object):
@@ -123,7 +131,10 @@ class GACNode(AstarNode):
         self.gac = gac_state
 
     def __repr__(self):
-        return 'GACNode(is_contra: %s)' % self.gac.is_contradiction
+        return 'GACNode %d (Contra: %s)' %(self.index, self.gac.contradiction)
+
+    def __str__(self):
+        return self.__repr__()
 
 
 class Constraint(object):

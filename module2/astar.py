@@ -43,7 +43,9 @@ class AStar(object):
             node = self.take_node()
             self.closed_set.add(node)
 
-            if node == self.goal_node:
+            if self.board.heuristic(node) == 0:
+                if DEBUG:
+                    print('Reached goal node!')
                 log('REACHED GOAL NODE')
                 yield {
                     'open_set': self.open_set,
@@ -53,9 +55,8 @@ class AStar(object):
                 break
 
             successors = self.board.get_all_successor_nodes(node)
-            #print(successors)
+
             for successor in successors:
-                #print(successor)
                 #node.children.add(successor)
                 if (successor not in self.closed_set) and (successor not in self.open_set):
                     self.attach_and_eval(successor, node)
@@ -64,7 +65,7 @@ class AStar(object):
                     self.attach_and_eval(successor, node)
                     if successor in self.closed_set:
                         debug('REACHED CLOSED NODE, PROPAGATING PATH')
-                        self.board.propagate_path(node)
+                        self.propagate_path(node)
 
             # Yields the current open- and closed set to the function that called the agenda_loop
             yield {

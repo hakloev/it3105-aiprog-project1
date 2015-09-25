@@ -4,6 +4,7 @@ from astar import *
 from gac import *
 from astar_board import *
 from copy import deepcopy
+from common import *
 
 
 class AStarGAC(AStarBoard):
@@ -13,24 +14,28 @@ class AStarGAC(AStarBoard):
         gac.domain_filtering_loop()
 
         self.initial_state = GACNode(gac)
+        self.goal_node = None
 
     def get_start_node(self):
         return self.initial_state
 
     def get_goal_node(self):
-        pass
+        return self.goal_node
 
     def get_all_successor_nodes(self, gac_state):
         successor_nodes = []
-        for node, domain in gac_state.gac.domains.items():
+        for node, domain in gac_state.gac.nodes.items():
             if len(domain) > 1:
-                print("New GACState created")
+                if DEBUG:
+                    print("New GACState created")
                 for domain_element in range(len(domain)):
                     child_state = deepcopy(gac_state)
-                    child_state.gac.domains[node] = [domain[domain_element]]
-                    print("Domain for %s is now %s" % (node ,child_state.gac.domains[node]))
+                    child_state.index += 1
+                    child_state.gac.nodes[node] = {list(domain)[domain_element]}
+                    if DEBUG:
+                        print("Domain for %s is now %s" % (node, child_state.gac.nodes[node]))
                     child_state.gac.run_again(node)
-                    if not child_state.gac.is_contradiction:
+                    if not child_state.gac.contradiction:
                         successor_nodes.append(child_state)
                 return successor_nodes
 
@@ -44,28 +49,11 @@ class AStarGAC(AStarBoard):
         since it is very hard to estimate the extent of domain reduction incurred by any
         run of the Domain-filtering loop.
         """
-        print(sum((len(domain_list) - 1) for domain_list in node.gac.domains.values()))
-        return sum((len(domain_list) - 1) for domain_list in node.gac.domains.values())
 
-    # Maybe implement arc_cost here?
+        h = sum((len(domains) - 1) for domains in node.gac.nodes.values())
+        if h == 0:
+            self.goal_node = self
+        if DEBUG:
+            print("Heuristic for %s is %d" % (node, h))
 
-
-if __name__ == '__main__':
-
-    nodes = Graph.read_graph_from_file('graphs/graph02.txt')
-
-    gac_state = GAC(nodes)
-
-    astar_gac = AStarGAC(gac=gac_state)
-
-    solver = AStar(board=astar_gac)
-
-    for state in solver.agenda_loop():
-        print("%s\n" % state)
-
-    print("Done")
-
-
-
-
-
+        return h

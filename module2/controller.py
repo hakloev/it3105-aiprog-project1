@@ -12,8 +12,12 @@ from gui.alternatives import *
 from gui.render import GraphRenderer
 from gui.window import Main
 from astar import *
+from astar_board import *
+from astar_gac import *
+import time
 
 GUI_UPDATE_INTERVAL = 50
+TIMEOUT_THRESHOLD = 60
 
 
 class MainController(object):
@@ -91,14 +95,11 @@ class MainController(object):
                     'Update interval must be in milliseconds'
                 )
 
-        if 'heuristic' in self.references:
-            self.window.renderer.board.mode = self.references['heuristic'].get()
-
         if algorithm == 'astar':
+            if 'heuristic' in self.references:
+                self.window.renderer.board.mode = self.references['heuristic'].get()
             a = AStar(
                 board=self.window.renderer.board,
-                start_node=self.window.renderer.board.get_start_node(),
-                goal_node=self.window.renderer.board.get_goal_node(),
                 mode=self.references['algorithm_mode'].get()
             )
 
@@ -107,17 +108,61 @@ class MainController(object):
                 self.timers.append(
                     self.window.parent.after(
                         i * update_interval,
-                        lambda p=step['path'],
-                        oss=len(step['open_set']),
-                        css=len(step['closed_set']): self.window.renderer.render_path(
-                            p,
+                        lambda path=step['path'],
+                        o=len(step['open_set']),
+                        c=len(step['closed_set']): self.window.renderer.render_path(
+                            path,
                             math_coords=True,
-                            open_set_size=oss,
-                            closed_set_size=css
+                            open_set_size=o,
+                            closed_set_size=c
                         )
                     )
                 )
                 i += 1
+
+        if algorithm == 'astar_gac':
+
+            g = self.window.renderer.graph
+            n = g.nodes()
+            e = [(x.index, y.index) for x, y in g.edges()]
+
+            k = int(self.references['k_value'].get())
+            n = {node.index: set([i for i in range(k)]) for node in n}
+            gac_state = GAC2Optimized(n, e)
+
+            def arc_constraint(x, y):
+                return x != y
+
+            gac_state.constraint_function = arc_constraint
+            astar_gac = AStarGAC(gac=gac_state)
+            solver = AStar(board=astar_gac)
+
+            t = time.time()
+
+            i = 0
+            for step in solver.agenda_loop():
+                print('Step %d' % i)
+                p = step['path']
+                oss = len(step['open_set'])
+                css = len(step['closed_set'])
+                self.window.renderer.render_path(
+                    p=p,
+                    open_set_size=oss,
+                    closed_set_size=css
+                )
+
+                i += 1
+                if time.time() - t > TIMEOUT_THRESHOLD or i > 200:
+                    messagebox.showerror(
+                        'Timeout!',
+                        'Took too much time: %d steps in %f seconds...' % (i, time.time() - t)
+                    )
+                    break
+
+            messagebox.showinfo(
+                'Complete!',
+                'Found a solution in %f seconds...' % (time.time() - t)
+            )
 
     def debug(self):
         """

@@ -9,9 +9,9 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import networkx as nx
 from tkinter import Canvas, BOTH, messagebox
 
-from common import debug
+from common import debug, COLORMAP
 
-GUI_UPDATE_INTERVAL = 50  # ms
+GUI_UPDATE_INTERVAL = 400  # ms
 BOARD_CELL_SIZE = 10  # pixels
 
 
@@ -213,6 +213,7 @@ class GraphRenderer(AbstractRenderer):
 
         # Initialize a networkx graph
         self.graph = nx.Graph()
+        self.pos = None
 
         # Initialize the FigureCanvas
         self.canvas = FigureCanvasTkAgg(self.figure, master=window)
@@ -257,7 +258,7 @@ class GraphRenderer(AbstractRenderer):
 
         self.axis.cla()
         plt.axis('off')
-        pos = nx.random_layout(self.graph)
+        self.pos = nx.spring_layout(self.graph)
 
         if 'nodelist' in kwargs:
             nodelist = kwargs['nodelist']
@@ -269,11 +270,11 @@ class GraphRenderer(AbstractRenderer):
         except IndexError:
             pass
 
-        colors = [n.index for n in nodelist]
+        colors = ['black']
 
         nx.draw_networkx(
             self.graph,
-            pos=pos,
+            pos=self.pos,
             node_size=40,
             with_labels=self.show_labels,
             node_color=colors,
@@ -288,6 +289,45 @@ class GraphRenderer(AbstractRenderer):
         """
 
         return [
-            gac_node.gac.domains[node.index][0] if len(gac_node.gac.domains[node.index]) == 1 else 'black'
+            COLORMAP[list(gac_node.gac.nodes[node.index])[0]] if len(gac_node.gac.nodes[node.index]) == 1 else 'black'
             for node in self.graph.nodes()
         ]
+
+    def render_path(self, **kwargs):
+
+        path = kwargs['p']
+        open_set_size = kwargs['open_set_size']
+        closed_set_size = kwargs['closed_set_size']
+
+        if len(path) < 2:
+            return
+
+        self.window.master.controller.references['path_length'].set(
+            'Path length: %d' % len(path)
+        )
+        self.window.master.controller.references['open_set_size'].set(
+            'OpenSet size: %d' % open_set_size
+        )
+        self.window.master.controller.references['closed_set_size'].set(
+            'ClosedSet size: %d' % closed_set_size
+        )
+        self.window.master.controller.references['total_set_size'].set(
+            'Total set size: %d' % (open_set_size + closed_set_size)
+        )
+
+        if not self.pos:
+            self.pos = nx.random_layout(self.graph)
+
+        self.axis.cla()
+        plt.axis('off')
+
+        colors = self.generate_colors(path[0])
+        nx.draw_networkx(
+            self.graph,
+            pos=self.pos,
+            node_size=40,
+            with_labels=self.show_labels,
+            node_color=colors,
+            **kwargs
+        )
+        self.canvas.draw()
