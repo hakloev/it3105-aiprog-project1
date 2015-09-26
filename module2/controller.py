@@ -12,8 +12,8 @@ from gui.alternatives import *
 from gui.render import GraphRenderer
 from gui.window import Main
 from astar import *
-from astar_problem import *
 from astar_gac import *
+from gac import *
 import time
 
 GUI_UPDATE_INTERVAL = 50
@@ -128,7 +128,7 @@ class MainController(object):
 
             k = int(self.references['k_value'].get())
             n = {node.index: set([i for i in range(k)]) for node in n}
-            gac_state = GAC2Optimized(n, e)
+            gac_state = GAC(n, e)
 
             def arc_constraint(x, y):
                 return x != y
