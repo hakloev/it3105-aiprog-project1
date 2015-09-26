@@ -12,7 +12,7 @@ from gui.alternatives import *
 from gui.render import GraphRenderer
 from gui.window import Main
 from astar import *
-from astar_gac import *
+from vc_problem import *
 from gac import *
 import time
 
@@ -134,8 +134,8 @@ class MainController(object):
                 return x != y
 
             gac_state.constraint_function = arc_constraint
-            astar_gac = AStarGAC(gac=gac_state)
-            solver = AStar(problem=astar_gac)
+            vc_problem = VCProblem(gac=gac_state)
+            solver = AStar(problem=vc_problem)
 
             t = time.time()
 

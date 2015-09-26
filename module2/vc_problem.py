@@ -9,7 +9,7 @@ from copy import deepcopy
 from common import *
 
 
-class AStarGAC(AStarProblem):
+class VCProblem(AStarProblem):
 
     def __init__(self, gac=None):
         gac.initialize()
