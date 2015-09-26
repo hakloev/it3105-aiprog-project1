@@ -96,14 +96,12 @@ class AstarNode(Node):
 
     def __init__(self, index=None, x=None, y=None):
         super(AstarNode, self).__init__(index=index, x=x, y=y)
-        self.arc_cost = 1
-        self.start = None
-        self.goal = None
+        self.is_start = None
+        self.is_goal = None
         self.g = 0
         self.h = 0
         self.f = 0
         self.walkable = True
-        self.char = 'U'
         self.full_repr_mode = True
 
     def __lt__(self, other):
@@ -118,7 +116,7 @@ class AstarNode(Node):
 
     def __repr__(self):
         if self.full_repr_mode:
-            return 'AstarNode(%d, %d, F: %d, G: %d, H: %d)' % (self.x, self.y, self.f, self.g, self.h)
+            return 'A*Node(%d, %d, F: %d, G: %d, H: %d)' % (self.x, self.y, self.f, self.g, self.h)
         else:
             return '%d (%d, %d)' % (self.index, self.x, self.y)
 

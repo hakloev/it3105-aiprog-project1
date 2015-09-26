@@ -30,8 +30,3 @@ class AStarProblem(metaclass=abc.ABCMeta):
     @abstractmethod
     def heuristic(self, node):
         pass
-
-
-
-
-

@@ -28,7 +28,8 @@ class AStar(object):
         self.open_set = []
         self.closed_set = set()
 
-        self.g_values = {}
+        self.start_node = self.problem.get_start_node()
+        self.goal_node = None
 
         self.path = []
         self.parent_of = {}
@@ -42,8 +43,9 @@ class AStar(object):
         """
         The implementation of the A* algorithm. This is the main loop for the algorithm
         """
-        self.add_node((self.problem.heuristic(self.problem.get_start_node()), self.problem.get_start_node()))
-        self.g_values[self.problem.get_start_node()] = 0
+
+        self.problem.heuristic(self.start_node)
+        self.add_node((self.start_node.h, self.start_node))
 
         while len(self.open_set):
             node = self.take_node()
@@ -63,11 +65,11 @@ class AStar(object):
             successors = self.problem.get_all_successor_nodes(node)
 
             for successor in successors:
-                #  node.children.add(successor)
+                node.children.add(successor)
                 if (successor not in self.closed_set) and (successor not in self.open_set):
-                    f_value = self.attach_and_eval(successor, node)
-                    self.add_node((f_value, successor))
-                elif self.g_values[node] + self.problem.arc_cost(node) < self.g_values[successor]:
+                    self.attach_and_eval(successor, node)
+                    self.add_node((successor.f, successor))
+                elif node.g + self.problem.arc_cost(node) < successor.g:
                     self.attach_and_eval(successor, node)  # Returns f value, but is never used
                     if successor in self.closed_set:
                         debug('Reached closed node, propagating path')
@@ -82,20 +84,17 @@ class AStar(object):
 
     def attach_and_eval(self, successor, node):
         self.parent_of[successor] = node
-        self.g_values[successor] = self.g_values[node] + self.problem.arc_cost(node)
-        #  successor.h = self.problem.heuristic(successor)
-        #  successor.f = self.g_values[successor] + self.problem.heuristic(successor)
-        return self.g_values[successor] + self.problem.heuristic(successor)
+        successor.g = node.g + self.problem.arc_cost(node)
+        successor.h = self.problem.heuristic(successor)
+        successor.f = successor.g + self.problem.heuristic(successor)
 
     def propagate_path(self, node):
         for child in node.children:
-            if node.g + node.arc_cost < child.g:
+            if node.g + self.problem.arc_cost(node) < child.g:
                 self.parent_of[child] = node
-                self.g_values[child] = self.g_values[node] + self.problem.arc_cost[node]
-
+                child.g = node.g + self.problem.arc_cost[node]
                 child.h = self.problem.heuristic(child)
-                #  child.f = child.g + child.h
-
+                child.f = child.g + child.h
                 self.propagate_path(child)
 
     def add_node(self, node):

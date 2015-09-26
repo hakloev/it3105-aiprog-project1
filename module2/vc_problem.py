@@ -3,7 +3,7 @@
 # Created by 'hakloev' on 9/9/15
 
 
-from datastructures import *
+from datastructures import GACNode
 from astar_problem import *
 from copy import deepcopy
 from common import *
@@ -58,6 +58,7 @@ class VCProblem(AStarProblem):
         if DEBUG:
             print("Heuristic for %s is %d" % (node, h))
 
+        node.h = h
         return h
 
     def arc_cost(self, node):
