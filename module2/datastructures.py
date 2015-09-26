@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from common import make_func
 from common import fetch_boards_from_dir
 from common import debug
 
@@ -135,21 +134,3 @@ class GACNode(AstarNode):
 
     def __str__(self):
         return self.__repr__()
-
-
-class Constraint(object):
-
-    def __init__(self, function=None, from_node=None, edges=None):
-        self.function = function
-        self.from_node = from_node
-        self.edges = edges
-
-    def get_constraint_function(self):
-        var_names = [str(self.from_node)] + [str(n) for n in self.edges]
-        return make_func(var_names, self.function)
-
-    def __repr__(self):
-        return "Constraint(function: %s, edges: %s" % (self.function, self.edges)
-
-    def __str__(self):
-        return "Constraint(function: %s, edges: %s" % (self.function, self.edges)

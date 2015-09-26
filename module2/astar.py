@@ -1,3 +1,7 @@
+# -*- coding: utf8 -*-
+#
+# Created by 'hakloev' on 9/9/15
+
 import heapq
 
 from common import *
@@ -64,7 +68,7 @@ class AStar(object):
                     f_value = self.attach_and_eval(successor, node)
                     self.add_node((f_value, successor))
                 elif self.g_values[node] + self.problem.arc_cost(node) < self.g_values[successor]:
-                    f_value = self.attach_and_eval(successor, node)
+                    self.attach_and_eval(successor, node)  # Returns f value, but is never used
                     if successor in self.closed_set:
                         debug('Reached closed node, propagating path')
                         self.propagate_path(node)
@@ -90,7 +94,7 @@ class AStar(object):
                 self.g_values[child] = self.g_values[node] + self.problem.arc_cost[node]
 
                 child.h = self.problem.heuristic(child)
-                #child.f = child.g + child.h
+                #  child.f = child.g + child.h
 
                 self.propagate_path(child)
 
@@ -115,20 +119,6 @@ class AStar(object):
             'dfs': lambda: self.open_set.pop(0)
         }.get(self.mode)()
 
-    def backtrack_and_print_path_from_node(self, node):
-        """
-        This method backtracks the path from a given node, and prints the path
-        It also prints the path length and total number of generated nodes
-        :param node: The node to backtrack from
-        """
-        print('--- PATH IN REVERSE ---')
-        path_length = 1  # Initiating as 1, because we do not count the goal node it self
-        while node.parent:
-            print(node)
-            path_length += 1
-            node = node.parent
-        print('--- REACHED GOAL NODE (%d, %d) ---' % (path_length, (len(self.open_set) + len(self.closed_set))))
-
     def get_path_from_node(self, path):
         """
         This method returns a list containing a deepcopy of all node objects in the current path
@@ -141,14 +131,3 @@ class AStar(object):
         return path[::1]
 
 
-    def get_path_length_from_goal_node(self):
-        """
-        Returns the total path length from the goal node
-        :return: The length
-        """
-        path_length = 1  # Initiating as 1, because we do not count the goal node it self
-        node = self.goal_node
-        while node.parent:
-            path_length += 1
-            node = node.parent
-        return path_length

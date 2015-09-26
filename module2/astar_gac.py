@@ -1,7 +1,9 @@
-__author__ = 'hakloev'
+# -*- coding: utf8 -*-
+#
+# Created by 'hakloev' on 9/9/15
 
-from astar import *
-from gac import *
+
+from datastructures import *
 from astar_problem import *
 from copy import deepcopy
 from common import *

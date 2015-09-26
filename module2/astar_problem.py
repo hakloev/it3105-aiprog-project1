@@ -1,4 +1,6 @@
-__author__ = 'hakloev'
+# -*- coding: utf8 -*-
+#
+# Created by 'hakloev' on 9/9/15
 
 import abc
 from abc import abstractmethod
@@ -6,7 +8,7 @@ from abc import abstractmethod
 
 class AStarProblem(metaclass=abc.ABCMeta):
     """
-    Abstract class keeping track of the minimum information A* must know of a state
+    Abstract class forcing implementation of the details A* need for perform the general algorithm
     """
 
     @abstractmethod
