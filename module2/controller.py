@@ -12,7 +12,7 @@ from gui.alternatives import *
 from gui.render import GraphRenderer
 from gui.window import Main
 from astar import *
-from astar_board import *
+from astar_problem import *
 from astar_gac import *
 import time
 
@@ -135,7 +135,7 @@ class MainController(object):
 
             gac_state.constraint_function = arc_constraint
             astar_gac = AStarGAC(gac=gac_state)
-            solver = AStar(board=astar_gac)
+            solver = AStar(problem=astar_gac)
 
             t = time.time()
 
@@ -152,7 +152,7 @@ class MainController(object):
                 )
 
                 i += 1
-                if time.time() - t > TIMEOUT_THRESHOLD or i > 200:
+                if time.time() - t > TIMEOUT_THRESHOLD or i > 600:
                     messagebox.showerror(
                         'Timeout!',
                         'Took too much time: %d steps in %f seconds...' % (i, time.time() - t)

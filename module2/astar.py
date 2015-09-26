@@ -1,92 +1,97 @@
 import heapq
 
 from common import *
-from astar_board import AStarBoard
+from astar_problem import AStarProblem
 
 
 class AStar(object):    
     """
-    A A* algorithm class. Takes the mode, board, start- and goal-node
+    A general A* algorithm class. Takes the mode and a problem instance as parameters
     :param mode: The mode to run the A* algorithm in
-    :param board: The board containing all nodes 
-    :param start_node: The instance of the start node
-    :param goal_node: The instance of the end node
+    :param problem: The problem to run A* on
     """
 
-    def __init__(self, mode='best', board=None):
+    def __init__(self, mode='best', problem=None):
         """
-        Initializing the AStar object with the given parameters 
+        Initializing the A* object with the given parameters
         """
-        if not isinstance(board, AStarBoard):
-            raise Exception("Board must be an instance of AStarBoard")
+        if not isinstance(problem, AStarProblem):
+            raise Exception("Problem must be an instance of AStarProblem")
 
         self.mode = mode
-        self.board = board  # initial gac_state
-
-        self.start_node = self.board.get_start_node()
-        self.goal_node = self.board.get_goal_node()
+        self.problem = problem
 
         self.open_set = []
+        self.closed_set = set()
+
+        self.g_values = {}
+
+        self.path = []
+        self.parent_of = {}
 
         if self.mode == 'best':
             heapq.heapify(self.open_set)
 
-        self.closed_set = set()
         print('A* initiated with valid problem instance')
 
     def agenda_loop(self):
         """
         The implementation of the A* algorithm. This is the main loop for the algorithm
         """
-        self.add_node(self.start_node)
+        self.add_node((self.problem.heuristic(self.problem.get_start_node()), self.problem.get_start_node()))
+        self.g_values[self.problem.get_start_node()] = 0
+
         while len(self.open_set):
             node = self.take_node()
             self.closed_set.add(node)
 
-            if self.board.heuristic(node) == 0:
+            if self.problem.heuristic(node) == 0:
                 if DEBUG:
                     print('Reached goal node!')
-                log('REACHED GOAL NODE')
+                log('Reached the goal node for this problem instance')
                 yield {
                     'open_set': self.open_set,
                     'closed_set': self.closed_set,
-                    'path': self.get_path_from_node(node)
+                    'path': self.get_path_from_node([node])
                 }
                 break
 
-            successors = self.board.get_all_successor_nodes(node)
+            successors = self.problem.get_all_successor_nodes(node)
 
             for successor in successors:
-                #node.children.add(successor)
+                #  node.children.add(successor)
                 if (successor not in self.closed_set) and (successor not in self.open_set):
-                    self.attach_and_eval(successor, node)
-                    self.add_node(successor)
-                elif node.g + node.arc_cost < successor.g:
-                    self.attach_and_eval(successor, node)
+                    f_value = self.attach_and_eval(successor, node)
+                    self.add_node((f_value, successor))
+                elif self.g_values[node] + self.problem.arc_cost(node) < self.g_values[successor]:
+                    f_value = self.attach_and_eval(successor, node)
                     if successor in self.closed_set:
-                        debug('REACHED CLOSED NODE, PROPAGATING PATH')
+                        debug('Reached closed node, propagating path')
                         self.propagate_path(node)
 
             # Yields the current open- and closed set to the function that called the agenda_loop
             yield {
                 'open_set': self.open_set,
                 'closed_set': self.closed_set,
-                'path': self.get_path_from_node(node)
+                'path': self.get_path_from_node([node])
             }
 
     def attach_and_eval(self, successor, node):
-        successor.parent = node
-        successor.g = node.g + node.arc_cost
-        successor.h = self.board.heuristic(successor)
-        successor.f = successor.g + successor.h
+        self.parent_of[successor] = node
+        self.g_values[successor] = self.g_values[node] + self.problem.arc_cost(node)
+        #  successor.h = self.problem.heuristic(successor)
+        #  successor.f = self.g_values[successor] + self.problem.heuristic(successor)
+        return self.g_values[successor] + self.problem.heuristic(successor)
 
     def propagate_path(self, node):
         for child in node.children:
             if node.g + node.arc_cost < child.g:
-                child.parent = node
-                child.g = node.g + node.arc_cost
-                child.h = self.board.heuristic(child)
-                child.f = child.g + child.h
+                self.parent_of[child] = node
+                self.g_values[child] = self.g_values[node] + self.problem.arc_cost[node]
+
+                child.h = self.problem.heuristic(child)
+                #child.f = child.g + child.h
+
                 self.propagate_path(child)
 
     def add_node(self, node):
@@ -95,7 +100,7 @@ class AStar(object):
         :param node: The node to append to the list
         """
         return {
-            'best': lambda: heapq.heappush(self.open_set, node),  # Insert to acending heap queue
+            'best': lambda: heapq.heappush(self.open_set, node),  # Insert to ascending heap queue
             'bfs': lambda: self.open_set.append(node),  # Insert to back of queue (FIFO)
             'dfs': lambda: self.open_set.insert(0, node)  # Insert to front of queue (LIFO)
         }.get(self.mode)()
@@ -105,7 +110,7 @@ class AStar(object):
         Method to take the right node from the open set depending on the mode
         """
         return {
-            'best': lambda: heapq.heappop(self.open_set),  # Get first element in queue
+            'best': lambda: heapq.heappop(self.open_set)[1],  # Get first element in queue
             'bfs': lambda: self.open_set.pop(0),
             'dfs': lambda: self.open_set.pop(0)
         }.get(self.mode)()
@@ -124,19 +129,17 @@ class AStar(object):
             node = node.parent
         print('--- REACHED GOAL NODE (%d, %d) ---' % (path_length, (len(self.open_set) + len(self.closed_set))))
 
-    @staticmethod
-    def get_path_from_node(node):
+    def get_path_from_node(self, path):
         """
         This method returns a list containing a deepcopy of all node objects in the current path
         To be used with for instance the GUI visualisation
         :param node:
         :return:
         """
-        current_path = []
-        while node.parent:
-            current_path.append(node)
-            node = node.parent
-        return current_path
+        while path[-1] != self.problem.get_start_node():
+            path.append(self.parent_of[path[-1]])
+        return path[::1]
+
 
     def get_path_length_from_goal_node(self):
         """

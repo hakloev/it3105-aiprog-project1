@@ -2,12 +2,12 @@ __author__ = 'hakloev'
 
 from astar import *
 from gac import *
-from astar_board import *
+from astar_problem import *
 from copy import deepcopy
 from common import *
 
 
-class AStarGAC(AStarBoard):
+class AStarGAC(AStarProblem):
 
     def __init__(self, gac=None):
         gac.initialize()
@@ -57,3 +57,6 @@ class AStarGAC(AStarBoard):
             print("Heuristic for %s is %d" % (node, h))
 
         return h
+
+    def arc_cost(self, node):
+        return 1
