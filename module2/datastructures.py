@@ -118,7 +118,7 @@ class AstarNode(Node):
         if self.full_repr_mode:
             return 'A*Node(%d, %d, F: %d, G: %d, H: %d)' % (self.x, self.y, self.f, self.g, self.h)
         else:
-            return '%d (%d, %d)' % (self.index, self.x, self.y)
+            return 'A*Node(%d (%d, %d))' % (self.index, self.x, self.y)
 
 
 class GACNode(AstarNode):
