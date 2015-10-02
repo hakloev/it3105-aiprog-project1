@@ -15,7 +15,9 @@ COLORMAP = {
     4: 'yellow',
     5: 'orange',
     6: 'teal',
-    7: 'pink'
+    7: 'pink',
+    8: 'magenta',
+    9: 'gold'
 }
 GUI_UPDATE_INTERVAL = 50  # milliseconds
 TIMEOUT_THRESHOLD = 180  # seconds
