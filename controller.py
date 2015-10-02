@@ -8,9 +8,10 @@ import time
 from tkinter import messagebox
 
 from algorithms import *
-from datastructures import Board, Graph, Node
+from datastructures import Graph, Node
 from gui.widgets import *
 from gui.render import CanvasRenderer, GraphRenderer
+from module1.navigation_problem import *
 from module2.vc_problem import *
 
 

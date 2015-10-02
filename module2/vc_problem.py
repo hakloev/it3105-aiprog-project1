@@ -3,7 +3,6 @@
 # Created by 'hakloev' on 9/9/15
 
 from copy import deepcopy
-
 from algorithms import AStarProblem, GAC
 from datastructures import AStarState, CSPState
 from common import *

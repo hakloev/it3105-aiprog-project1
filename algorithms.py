@@ -2,12 +2,11 @@
 #
 # Created by 'myth' on 10/2/15
 
-import abc
 from abc import abstractmethod
-import heapq
 from itertools import product
-
 from common import *
+import abc
+import heapq
 
 
 # --- A* ---
@@ -62,6 +61,8 @@ class AStar(object):
         """
         if not isinstance(problem, AStarProblem):
             raise Exception("Problem must be an instance of AStarProblem")
+        else:
+            log('A* initiated with valid problem instance of type: %s' % type(problem).__name__)
 
         self.mode = mode
         self.problem = problem
@@ -78,7 +79,7 @@ class AStar(object):
         if self.mode == 'best':
             heapq.heapify(self.open_set)
 
-        print('A* initiated with valid problem instance')
+        log("A* initiated successfully")
 
     def agenda_loop(self):
         """
