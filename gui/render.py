@@ -73,7 +73,7 @@ class CanvasRenderer(AbstractRenderer):
         super().__init__(window)
 
         self.canvas = Canvas(self.window)
-        self.canvas.grid(row=0, column=0, padx=BOARD_CELL_SIZE, sticky='nsew')
+        self.canvas.grid(row=0, column=0, padx=BOARD_CELL_SIZE, ipadx=10, ipady=10, sticky='nsew')
         self.path_sprites = set()
 
     def render_board(self, math_coords=False):
@@ -224,6 +224,8 @@ class GraphRenderer(AbstractRenderer):
         self.canvas.get_tk_widget().pack(fill=BOTH, expand=True)
         self.canvas.show()
 
+        self.sprites = None
+
     def add_nodes_to_graph(self, nodes):
         """
         Helper method that takes in our node objects and injects it into the networkx graph object
@@ -275,7 +277,7 @@ class GraphRenderer(AbstractRenderer):
 
         colors = ['black']
 
-        nx.draw_networkx(
+        self.sprites = nx.draw_networkx_nodes(
             self.graph,
             pos=self.pos,
             node_size=40,
@@ -283,6 +285,11 @@ class GraphRenderer(AbstractRenderer):
             node_color=colors,
             **kwargs
         )
+        nx.draw_networkx_edges(
+            self.graph,
+            pos=self.pos
+        )
+
         self.canvas.draw()
 
     def generate_colors(self, astar_state):
@@ -304,6 +311,8 @@ class GraphRenderer(AbstractRenderer):
 
         if len(path) < 2:
             return
+        else:
+            self.sprites.set_facecolor('black')
 
         self.window.master.controller.references['path_length'].set(
             'Path length: %d' % len(path)
@@ -321,11 +330,13 @@ class GraphRenderer(AbstractRenderer):
         if not self.pos:
             self.pos = nx.random_layout(self.graph)
 
-        self.axis.cla()
-        plt.axis('off')
+        # self.axis.cla()
+        # plt.axis('off')
 
         colors = self.generate_colors(path[0])
-        nx.draw_networkx(
+
+        """
+        nx.draw_networkx_nodes(
             self.graph,
             pos=self.pos,
             node_size=40,
@@ -333,4 +344,6 @@ class GraphRenderer(AbstractRenderer):
             node_color=colors,
             **kwargs
         )
+        """
+        self.sprites.set_facecolors(colors)
         self.canvas.draw()

@@ -180,7 +180,6 @@ class MainController(object):
 
             i = 0
             for step in solver.agenda_loop():
-                print('Step %d' % i)
                 p = step['path']
                 oss = len(step['open_set'])
                 css = len(step['closed_set'])
@@ -191,7 +190,7 @@ class MainController(object):
                 )
 
                 i += 1
-                if time.time() - t > TIMEOUT_THRESHOLD or i > 600:
+                if time.time() - t > TIMEOUT_THRESHOLD:
                     messagebox.showerror(
                         'Timeout!',
                         'Took too much time: %d steps in %f seconds...' % (i, time.time() - t)
