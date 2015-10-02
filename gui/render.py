@@ -3,14 +3,15 @@
 # Created by 'myth' on 8/26/15
 
 import matplotlib
+matplotlib.use('tkAgg')
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 import networkx as nx
+import numpy as np
+
 from tkinter import Canvas, BOTH, messagebox
 
 from common import debug, COLORMAP, BOARD_CELL_SIZE
-
-matplotlib.use('tkAgg')
 
 
 class AbstractRenderer(object):
@@ -70,6 +71,7 @@ class CanvasRenderer(AbstractRenderer):
         Constructor
         :param window: Reference to the main window instance
         """
+
         super().__init__(window)
 
         self.canvas = Canvas(self.window)
@@ -221,9 +223,15 @@ class GraphRenderer(AbstractRenderer):
 
         # Initialize the FigureCanvas
         self.canvas = FigureCanvasTkAgg(self.figure, master=window)
+        self.toolbar = NavigationToolbar2TkAgg(self.canvas, window)
+        self.toolbar.update()
+        self.toolbar.pack()
+
         self.canvas.get_tk_widget().pack(fill=BOTH, expand=True)
         self.canvas.show()
 
+        # This will eventually hold a matplotlib.collections.PathCollection of vectors
+        # that can be re-drawns after using a new colors array
         self.sprites = None
 
     def add_nodes_to_graph(self, nodes):
@@ -254,7 +262,38 @@ class GraphRenderer(AbstractRenderer):
         """
 
         self.graph = None
+        try:
+            self.toolbar.destroy()
+        except AttributeError as e:
+            debug("Oh well...")
         self.canvas.get_tk_widget().destroy()
+
+    def generate_layout(self):
+        """
+        Generates a NetworkX compatible dictionary of node to numpy array mappings for graph layout
+        """
+
+        min_x = float('Inf')
+        max_x = 0
+        min_y = float('Inf')
+        max_y = 0
+
+        self.pos = {}
+
+        for node in self.graph.nodes():
+            if node.x < min_x:
+                min_x = node.x
+            if node.x > max_x:
+                max_x = node.x
+            if node.y < min_y:
+                min_y = node.y
+            if node.y > max_y:
+                max_y = node.y
+
+        for node in self.graph.nodes():
+            x = float(node.x) / max_x
+            y = float(node.y) / max_y
+            self.pos[node] = np.array([x, y])
 
     def render_graph(self, **kwargs):
         """
@@ -263,7 +302,8 @@ class GraphRenderer(AbstractRenderer):
 
         self.axis.cla()
         plt.axis('off')
-        self.pos = nx.spring_layout(self.graph)
+
+        self.generate_layout()
 
         if 'nodelist' in kwargs:
             nodelist = kwargs['nodelist']
@@ -330,20 +370,6 @@ class GraphRenderer(AbstractRenderer):
         if not self.pos:
             self.pos = nx.random_layout(self.graph)
 
-        # self.axis.cla()
-        # plt.axis('off')
-
         colors = self.generate_colors(path[0])
-
-        """
-        nx.draw_networkx_nodes(
-            self.graph,
-            pos=self.pos,
-            node_size=40,
-            with_labels=self.show_labels,
-            node_color=colors,
-            **kwargs
-        )
-        """
         self.sprites.set_facecolors(colors)
         self.canvas.draw()
