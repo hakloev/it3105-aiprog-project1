@@ -46,6 +46,8 @@ class MainController(object):
             self.references['open_set_size'].set('OpenSet size: 0')
         if 'closed_set_size' in self.references:
             self.references['closed_set_size'].set('ClosedSet size: 0')
+        if 'total_set_size' in self.references:
+            self.references['total_set_size'].set('Total set size: 0')
 
     def set_window(self, window):
         """
@@ -76,7 +78,7 @@ class MainController(object):
             generate_stats(self.window.stats_area)
 
         self.window.renderer.clear()
-        self.window.renderer.set_board(Board(kwargs['file_path']))
+        self.window.renderer.set_board(NavigationProblem(kwargs['file_path']))
         self.window.render(math_coords=True)
 
     def load_graph(self, **kwargs):
@@ -180,8 +182,10 @@ class MainController(object):
             t = time.time()
 
             i = 0
+            last_node = None
             for step in solver.agenda_loop():
                 p = step['path']
+                last_node = p[0]
                 oss = len(step['open_set'])
                 css = len(step['closed_set'])
                 self.window.renderer.render_path(
@@ -198,34 +202,16 @@ class MainController(object):
                     )
                     break
 
-            messagebox.showinfo(
-                'Complete!',
-                'Found a solution in %f seconds...' % (time.time() - t)
-            )
-
-    def debug(self):
-        """
-        Performs a debug print to the console for interactive debugging
-        """
-        g = self.window.renderer.graph
-        print(g.nodes())
-        print(g.edges())
-
-    def add_random_node(self):
-        """
-        DEBUG
-        :return:
-        """
-        g = self.window.renderer.graph
-        n = Node(index=random.randint(1337, 13337), x=random.randint(0, 40), y=random.randint(0, 40))
-        g.add_node(n)
-        g.add_edge(n, g.nodes()[0])
-        g.add_edge(n, g.nodes()[2])
-
-        print(g.nodes())
-
-        # Replace draw_only with a tuple containing a nodeset and edgeset to only draw those
-        self.window.renderer.render_graph(nodelist=[n], edgelist=[(n, g.nodes()[0]), (n, g.nodes()[2])])
+            if last_node.is_goal:
+                messagebox.showinfo(
+                    'Complete!',
+                    'Found a solution in %f seconds...' % (time.time() - t)
+                )
+            else:
+                messagebox.showerror(
+                    'Complete!',
+                    'No solution could be found'
+                )
 
     def exit(self):
         """

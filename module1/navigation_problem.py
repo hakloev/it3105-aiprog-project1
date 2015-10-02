@@ -2,13 +2,12 @@
 #
 # Created by 'hakloev' on 9/10/15
 
-
 from algorithms import AStarProblem
 from datastructures import AStarState
 from math import pow, sqrt
 
 
-class Board(AStarProblem):
+class NavigationProblem(AStarProblem):
     """
     Class containing all the logic needed for setting up a board with Node objects
     Also contains the board specific functions of A*, like get_all_successor_nodes, attach_and_eval eg.

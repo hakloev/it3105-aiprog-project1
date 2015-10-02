@@ -265,7 +265,7 @@ class GraphRenderer(AbstractRenderer):
         try:
             self.toolbar.destroy()
         except AttributeError as e:
-            debug("Oh well...")
+            debug("AttributeError bug in matplotlib FigureCanvasTkAgg toolbar catched during destroy()")
         self.canvas.get_tk_widget().destroy()
 
     def generate_layout(self):
