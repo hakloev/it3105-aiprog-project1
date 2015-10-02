@@ -3,21 +3,15 @@
 # Created by 'myth' on 9/23/15
 
 import random
-
-from tkinter import messagebox
-from tkinter import *
-
-from datastructures import Graph, Node
-from gui.alternatives import *
-from gui.render import GraphRenderer
-from gui.window import Main
-from astar import *
-from vc_problem import *
-from gac import *
 import time
 
-GUI_UPDATE_INTERVAL = 50
-TIMEOUT_THRESHOLD = 60
+from tkinter import messagebox
+
+from algorithms import *
+from datastructures import Board, Graph, Node
+from gui.widgets import *
+from gui.render import CanvasRenderer, GraphRenderer
+from module2.vc_problem import *
 
 
 class MainController(object):
@@ -70,6 +64,41 @@ class MainController(object):
                 'No file path was provided!'
             )
 
+        if isinstance(self.window.renderer, GraphRenderer):
+            self.window.renderer.destruct()
+            renderer = CanvasRenderer(self.window.content_area)
+            renderer.set_controller(self)
+            self.window.set_renderer(renderer)
+
+            # Update panel widgets
+            generate_options(self.window.options_area)
+            generate_stats(self.window.stats_area)
+
+        self.window.renderer.clear()
+        self.window.renderer.set_board(Board(kwargs['file_path']))
+        self.window.render(math_coords=True)
+
+    def load_graph(self, **kwargs):
+        """
+        Loads a specific predefined board
+        """
+
+        if 'file_path' not in kwargs:
+            messagebox.showerror(
+                'Missing file path',
+                'No file path was provided!'
+            )
+
+        if isinstance(self.window.renderer, CanvasRenderer):
+            self.window.renderer.destruct()
+            renderer = GraphRenderer(self.window.content_area)
+            renderer.set_controller(self)
+            self.window.set_renderer(renderer)
+
+            # Update panel widgets
+            generate_options(self.window.options_area, module=2)
+            generate_stats(self.window.stats_area, module=2)
+
         self.window.renderer.clear()
         # Load the graph from file, and provide networkx graph instance for rendering
         Graph.read_graph_from_file(kwargs['file_path'], networkx_graph=self.window.renderer.graph)
@@ -81,25 +110,40 @@ class MainController(object):
         Solves the currently set board with the provided algorithm
         """
 
+        if isinstance(self.window.renderer, CanvasRenderer):
+            algorithm = 'astar'
+        elif isinstance(self.window.renderer, GraphRenderer):
+            algorithm = 'astar_gac'
+
         # Clear any active rendering timers
         self.clear_timers()
 
-        update_interval = GUI_UPDATE_INTERVAL
-        if 'update_interval' in self.references:
-            try:
-                update_interval = self.references['update_interval'].get()
-                update_interval = int(update_interval)
-            except ValueError:
-                messagebox.showerror(
-                    'Invalid update interval',
-                    'Update interval must be in milliseconds'
-                )
-
         if algorithm == 'astar':
+
+            if self.window.renderer.board is None:
+                messagebox.showerror(
+                    'No board data',
+                    'You have to load a board or graph before you can run'
+                )
+                return
+
             if 'heuristic' in self.references:
                 self.window.renderer.board.mode = self.references['heuristic'].get()
+
+            update_interval = GUI_UPDATE_INTERVAL
+            if 'update_interval' in self.references:
+                try:
+                    update_interval = self.references['update_interval'].get()
+                    update_interval = int(update_interval)
+                except ValueError:
+                    messagebox.showerror(
+                        'Invalid update interval',
+                        'Update interval must be in milliseconds'
+                    )
+                    return
+
             a = AStar(
-                board=self.window.renderer.board,
+                problem=self.window.renderer.board,
                 mode=self.references['algorithm_mode'].get()
             )
 
@@ -120,7 +164,7 @@ class MainController(object):
                 )
                 i += 1
 
-        if algorithm == 'astar_gac':
+        elif algorithm == 'astar_gac':
 
             g = self.window.renderer.graph
             n = g.nodes()
@@ -129,13 +173,7 @@ class MainController(object):
             k = int(self.references['k_value'].get())
             n = {node.index: set([i for i in range(k)]) for node in n}
 
-            gac_state = GAC(n, e)
-
-            def arc_constraint(x, y):
-                return x != y
-
-
-            vc_problem = VCProblem(gac=gac_state)
+            vc_problem = VCProblem(n, e)
             solver = AStar(problem=vc_problem)
 
             t = time.time()

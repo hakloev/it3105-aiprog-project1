@@ -7,7 +7,7 @@ from tkinter import *
 from astar import AStar
 from datastructures import Board
 from gui.window import *
-from gui.alternatives import *
+from gui.widgets import *
 from gui.render import *
 
 
