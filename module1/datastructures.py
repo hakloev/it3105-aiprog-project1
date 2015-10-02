@@ -20,8 +20,7 @@ class Board(object):
         self.goal_node = None
 
         if board_path:
-            grid_data = self.init_grid_from_file()
-            self.make_grid_from_data(grid_data)
+            self.init_grid_from_file()
         else:
             self.grid = [[]]
 
@@ -29,38 +28,22 @@ class Board(object):
         """
         Reads and parses all the data from the text file representing the board
         """
-        grid_data = list()
         with open(self.board_path) as f:
-            for i, line in enumerate(f.readlines()):
-                if i != 1:
-                    grid_data.append(tuple(map(int, line.strip('()\n').split(','))))
-                else:
-                    grid_data.append([tuple(map(int, el.strip('()').split(','))) for el in line.rstrip().split(' ')])
+            width, height = map(int, f.readline().split())
+            self.grid = [[Node(x=x, y=y) for x in range(width)] for y in range(height)]
+            sx, sy, gx, gy = map(int, f.readline().split())
+            self.start_node = self.get_node(sx, sy)
+            self.start_node.start = True
+            self.goal_node = self.get_node(gx, gy)
+            self.goal_node.goal = True
 
-        return grid_data
-
-    def make_grid_from_data(self, data):
-        """
-        Takes in a data argument and returns a populated grid
-        :param data: The list representing the board
-        """
-        grid_size = data[0]
-        self.grid = [[Node(x=x, y=y) for x in range(grid_size[0])] for y in range(grid_size[1])]
-
-        # Add start points to the grid
-        trigger_points = data[1]
-        self.start_node = self.get_node(trigger_points[0][0], trigger_points[0][1])
-        self.start_node.start = True
-        self.goal_node = self.get_node(trigger_points[1][0], trigger_points[1][1])
-        self.goal_node.goal = True
-
-        # Add obstacles to the grid and set the nodes to non-walkable
-        for obstacle in data[2:]:
-            for y in range(obstacle[3]):
-                for x in range(obstacle[2]):
-                    obstacle_node = self.get_node(obstacle[0] + x, obstacle[1] + y)
-                    obstacle_node.arc_cost = float('Inf')
-                    obstacle_node.walkable = False
+            for line in f.readlines():
+                ox, oy, ow, oh = map(int, line.split())
+                for y in range(oh):
+                    for x in range(ow):
+                        obstacle_node = self.get_node(ox + x, oy + y)
+                        obstacle_node.arc_cost = float('Inf')
+                        obstacle_node.walkable = False
 
     def get_all_successor_nodes(self, node):
         """
