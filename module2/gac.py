@@ -54,6 +54,7 @@ class GAC(object):
             for domain in to_be_removed:
                 self.nodes[from_node].remove(domain)
         except KeyError:
+            print("KeyError when trying to remove %s from %s" % (COLORMAP[domain], from_node))
             pass
             # TODO: Check what is happening here
 
