@@ -25,11 +25,10 @@ class VCProblem(AStarProblem):
 
         self.gac.initialize()
         self.gac.domain_filtering_loop()
-
-        # TODO: Check contradiction or solution
-
         self.initial_state = AStarState()
         self.initial_state.state = self.gac.csp_state
+
+        # TODO: Check for contradiction or solution
 
         self.goal_node = None
 

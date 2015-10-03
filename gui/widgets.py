@@ -30,6 +30,11 @@ def generate_menus(window):
              lambda fp=board: window.controller.load_graph(file_path=fp))
             for board in fetch_files_from_dir(rootdir='module2/graphs/')
         ])),
+        (u'Nonograms', sorted([
+            (os.path.basename(board),
+             lambda fp=board: window.controller.load_nonogram(file_path=fp))
+            for board in fetch_files_from_dir(rootdir='module3/nonograms/')
+        ])),
         (u'Run', [
             (u'GO!', window.controller.solve),
         ]),

@@ -12,6 +12,7 @@ from gui.widgets import *
 from gui.render import CanvasRenderer, GraphRenderer
 from module1.navigation import *
 from module2.vc import *
+from module3.nonogram import *
 
 
 class MainController(object):
@@ -106,6 +107,27 @@ class MainController(object):
         Graph.read_graph_from_file(kwargs['file_path'], networkx_graph=self.window.renderer.graph)
 
         self.window.renderer.render_graph()
+
+    def load_nonogram(self, **kwargs):
+        if 'file_path' not in kwargs:
+            messagebox.showerror(
+                'Missing file path',
+                'No file path was provided!'
+            )
+
+        if isinstance(self.window.renderer, GraphRenderer):
+            self.window.renderer.destruct()
+            renderer = CanvasRenderer(self.window.content_area)
+            renderer.set_controller(self)
+            self.window.set_renderer(renderer)
+
+            # Update panel widgets
+            generate_options(self.window.options_area)
+            generate_stats(self.window.stats_area)
+
+        self.window.renderer.clear()
+        self.window.renderer.set_board(NonogramProblem(kwargs['file_path']))
+        self.window.render(math_coords=False)
 
     def solve(self, algorithm='astar'):
         """
