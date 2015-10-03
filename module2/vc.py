@@ -10,13 +10,12 @@ from common import *
 
 class VCProblem(AStarProblem):
 
-    def __init__(self, nodes, edges):
+    def __init__(self, nodes, edges, cf=lambda x, y: x != y):
         """
         Constructor for VCProblem
         :param nodes: nodes in the VC-problem
         :param edges: edges between the nodes in the VC-problem
         """
-
         self.constraints = {}
         for from_node, to_node in edges:
             if from_node not in self.constraints:
@@ -26,7 +25,7 @@ class VCProblem(AStarProblem):
                 self.constraints[to_node] = []
             self.constraints[to_node].append(from_node)
 
-        self.gac = GAC(csp_state=CSPState(nodes), cnet=self.constraints)
+        self.gac = GAC(csp_state=CSPState(nodes), cnet=self.constraints, cf=cf)
 
         self.gac.initialize()
         self.gac.domain_filtering_loop()

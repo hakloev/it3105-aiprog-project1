@@ -176,7 +176,7 @@ GAC_DEFAULT_K = 4
 
 class GAC(object):
 
-    def __init__(self, cnet=None, csp_state=None):
+    def __init__(self, cnet=None, csp_state=None, cf=lambda x, y: x != y):
         """
         Constructor
         :param cnet:
@@ -185,6 +185,7 @@ class GAC(object):
         """
         self.csp_state = csp_state
         self.cnet = cnet
+        self.cf = cf
         self.queue = []
 
     def initialize(self):
@@ -200,14 +201,11 @@ class GAC(object):
     def revise(self, from_node):
         to_be_removed = []
 
-        def cf(a, b):
-            return a != b
-
         for arc in self.cnet[from_node]:
             for domain in self.csp_state.nodes[from_node]:
                 remove = True
                 for x, y in product([domain], self.csp_state.nodes[arc]):
-                    if cf(x, y):
+                    if self.cf(x, y):
                         remove = False
                         break
 
