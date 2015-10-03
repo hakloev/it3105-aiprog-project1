@@ -92,9 +92,7 @@ class NonogramProblem(AStarProblem):
         Generates constraint network
         """
 
-        # TODO: Generate constraints based on make_func or something
-
-        pass
+        
 
     def get_start_node(self):
         return self.initial_state

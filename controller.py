@@ -74,8 +74,8 @@ class MainController(object):
             self.window.set_renderer(renderer)
 
             # Update panel widgets
-            generate_options(self.window.options_area)
-            generate_stats(self.window.stats_area)
+        generate_options(self.window.options_area)
+        generate_stats(self.window.stats_area)
 
         self.window.renderer.clear()
         self.window.renderer.set_board(NavigationProblem(kwargs['file_path']))
@@ -98,9 +98,9 @@ class MainController(object):
             renderer.set_controller(self)
             self.window.set_renderer(renderer)
 
-            # Update panel widgets
-            generate_options(self.window.options_area, module=2)
-            generate_stats(self.window.stats_area, module=2)
+        # Update panel widgets
+        generate_options(self.window.options_area, module=2)
+        generate_stats(self.window.stats_area, module=2)
 
         self.window.renderer.clear()
         # Load the graph from file, and provide networkx graph instance for rendering
@@ -121,9 +121,9 @@ class MainController(object):
             renderer.set_controller(self)
             self.window.set_renderer(renderer)
 
-            # Update panel widgets
-            generate_options(self.window.options_area)
-            generate_stats(self.window.stats_area)
+        # Update panel widgets
+        generate_options(self.window.options_area, module=3)
+        generate_stats(self.window.stats_area, module=3)
 
         self.window.renderer.clear()
         self.window.renderer.set_board(NonogramProblem(kwargs['file_path']))
@@ -210,6 +210,12 @@ class MainController(object):
                 last_node = p[0]
                 oss = len(step['open_set'])
                 css = len(step['closed_set'])
+
+                vma = sum(0 if len(y) - 1 == 0 else 1 for x, y in last_node.state.nodes.items())
+                tuc = sum(1 if len(y) == 0 else 0 for x, y in last_node.state.nodes.items())
+                self.references['total_missing_assignment'].set('Vertices missing assignment: %d' % vma)
+                self.references['total_unsatisfied_constraints'].set('Unsatisfied constraints: %d' % tuc)
+
                 self.window.renderer.render_path(
                     p=p,
                     open_set_size=oss,

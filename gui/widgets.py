@@ -92,10 +92,9 @@ def generate_options(frame, module=1):
         update_interval.grid(row=2, column=1, padx=5, pady=5, ipadx=5, ipady=5, sticky='E')
         frame.master.controller.references['update_interval'] = update_interval
 
-    else:
+    elif module == 2:
         k_value_label = Label(frame, text='K value:')
         k_value_label.grid(row=3, padx=5, pady=5, ipadx=5, ipady=5, sticky='W')
-
         k_value = Entry(frame)
         k_value.insert(0, str(GAC_DEFAULT_K))
         k_value.grid(row=3, column=1, padx=5, pady=5, ipadx=5, ipady=5, sticky='E')
@@ -143,6 +142,15 @@ def generate_stats(frame, module=1):
     frame.master.controller.references['total_set_size'] = total_set_size
     total_set_size_label.grid(row=3, padx=5, pady=5, ipadx=5, ipady=5, sticky='W')
 
-    if module > 1:
-        # TODO: Create stats for GAC-specific stuff
-        pass
+    if module == 2:
+        total_unsatisfied_constraints = StringVar(frame)
+        total_unsatisfied_constraints.set('Unsatisfied constraints: 0')
+        total_unsatisfied_constraints_label = Label(frame, textvariable=total_unsatisfied_constraints)
+        frame.master.controller.references['total_unsatisfied_constraints'] = total_unsatisfied_constraints
+        total_unsatisfied_constraints_label.grid(row=4, padx=5, pady=5, ipadx=5, ipady=5, sticky='W')
+
+        total_missing_assignment = StringVar(frame)
+        total_missing_assignment.set('Vertices missing assignment: 0')
+        total_missing_assignment_label = Label(frame, textvariable=total_missing_assignment)
+        frame.master.controller.references['total_missing_assignment'] = total_missing_assignment
+        total_missing_assignment_label.grid(row=5, padx=5, pady=5, ipadx=5, ipady=5, sticky='W')
