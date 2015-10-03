@@ -200,12 +200,15 @@ class GAC(object):
 
     def revise(self, from_node):
         to_be_removed = []
-
         for arc in self.cnet[from_node]:
             for domain in self.csp_state.nodes[from_node]:
                 remove = True
+                print(from_node, domain, arc - len(domain))
                 for x, y in product([domain], self.csp_state.nodes[arc]):
-                    if self.cf(x, y):
+                    a = x[from_node]
+                    b = y[arc - len(domain)]
+                    print(a, b)
+                    if self.cf(a, b):
                         remove = False
                         break
 

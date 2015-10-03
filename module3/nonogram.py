@@ -38,13 +38,15 @@ class NonogramProblem(AStarProblem):
         self.constraints = {}
         self.generate_constraints()
 
-        self.gac = GAC(cnet=self.constraints, csp_state=CSPState(self.nodes))
+        self.gac = GAC(cnet=self.constraints, csp_state=CSPState(self.nodes), cf=lambda a, b: not a ^ b)
         self.gac.initialize()
         self.gac.domain_filtering_loop()
         self.initial_state = AStarState()
         self.initial_state.state = self.gac.csp_state
 
         # TODO: Check for contradiction or solution
+        print(self.gac.csp_state.nodes)
+
 
         log('NonogramProblem initialized with %dx%d grid' % (rows, cols))
 
@@ -92,11 +94,8 @@ class NonogramProblem(AStarProblem):
         Generates constraint network
         """
         # TODO: Generate constraints based on make_func or something
-
         for row in range(self.total_rows):
-            for col in range(self.total_cols):
-                self.constraints[(row, col)] = lambda x, y: x[0] == y[0]
-        print(self.constraints.keys())
+            self.constraints[row] = [i for i in range(self.total_rows, self.total_rows + self.total_cols)]
 
     def get_start_node(self):
         return self.initial_state
