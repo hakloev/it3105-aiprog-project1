@@ -214,9 +214,9 @@ class GAC(object):
             for domain in to_be_removed:
                 self.csp_state.nodes[from_node].remove(domain)
         except KeyError as e:
-            print("KeyError when trying to remove domain %s" % (str(e)))
+            if DEBUG:
+                print("KeyError when trying to remove domain %s" % (str(e)))
             pass
-            # TODO: Check what is happening here
 
         if to_be_removed:
             if not self.csp_state.nodes[from_node]:
