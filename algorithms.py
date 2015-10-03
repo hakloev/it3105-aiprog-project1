@@ -203,27 +203,19 @@ class GAC(object):
         for arc in self.cnet[from_node]:
             for domain in self.csp_state.nodes[from_node]:
                 remove = True
-                print(from_node, domain, arc - len(domain))
                 for x, y in product([domain], self.csp_state.nodes[arc]):
-                    a = x[from_node]
-                    b = y[arc - len(domain)]
-                    print(a, b)
-                    if self.cf(a, b):
+                    if self.cf(x, y):
                         remove = False
                         break
 
                 if remove:
                     if DEBUG:
-                        print('Removing domain %s from %s' % (COLORMAP[domain], from_node))
+                        print('Removing domain %s from %s' % (str(domain), from_node))
                     to_be_removed.append(domain)
 
-        try:
-            for domain in to_be_removed:
+        for domain in to_be_removed:
+            if domain in self.csp_state.nodes[from_node]:
                 self.csp_state.nodes[from_node].remove(domain)
-        except KeyError as e:
-            if DEBUG:
-                print("KeyError when trying to remove domain %s" % (str(e)))
-            pass
 
         if to_be_removed:
             if not self.csp_state.nodes[from_node]:

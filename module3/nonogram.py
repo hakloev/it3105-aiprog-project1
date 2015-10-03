@@ -24,12 +24,14 @@ class NonogramProblem(AStarProblem):
             self.total_rows = rows
             self.total_cols = cols
 
+            r_reversed = []
             for row in range(rows):
-                counts = list(map(int, f.readline().split()))
-                self.nodes[row] = self.gen_patterns(counts, cols)
+                r_reversed.append(list(map(int, f.readline().split())))
+            for row, counts in enumerate(reversed(r_reversed)):
+                self.nodes[row] = [(row, p) for p in self.gen_patterns(counts, cols)]
             for col in range(cols):
                 counts = list(map(int, f.readline().split()))
-                self.nodes[rows + col] = self.gen_patterns(counts, rows)
+                self.nodes[rows + col] = [(col, p) for p in self.gen_patterns(counts, rows)]
 
         if DEBUG:
             for x in range(rows + cols):
@@ -38,7 +40,12 @@ class NonogramProblem(AStarProblem):
         self.constraints = {}
         self.generate_constraints()
 
-        self.gac = GAC(cnet=self.constraints, csp_state=CSPState(self.nodes), cf=lambda a, b: not a ^ b)
+        def cf(a, b):
+            r, domain_a = a
+            c, domain_b = b
+            return domain_a[c] == domain_b[r]
+
+        self.gac = GAC(cnet=self.constraints, csp_state=CSPState(self.nodes), cf=cf)
         self.gac.initialize()
         self.gac.domain_filtering_loop()
         self.initial_state = AStarState()
@@ -46,7 +53,6 @@ class NonogramProblem(AStarProblem):
 
         # TODO: Check for contradiction or solution
         print(self.gac.csp_state.nodes)
-
 
         log('NonogramProblem initialized with %dx%d grid' % (rows, cols))
 
@@ -94,9 +100,10 @@ class NonogramProblem(AStarProblem):
         Generates constraint network
         """
 
-        # TODO: Generate constraints based on make_func or something
         for row in range(self.total_rows):
             self.constraints[row] = [i for i in range(self.total_rows, self.total_rows + self.total_cols)]
+        for col in range(self.total_cols):
+            self.constraints[self.total_rows + col] = [i for i in range(0, self.total_rows)]
 
     def get_start_node(self):
         return self.initial_state
