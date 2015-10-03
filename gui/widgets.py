@@ -63,9 +63,9 @@ def generate_options(frame, module=1):
     mode_label = Label(frame, text='Algorithm mode:')
     mode_label.grid(row=0, padx=5, pady=5, ipadx=5, ipady=5, sticky='W')
 
-    mode_var = StringVar(master=frame, value='best', name='algorithm_mode')
+    mode_var = StringVar(master=frame, value=ASTAR_OPTIONS[0], name='algorithm_mode')
     frame.master.controller.references['algorithm_mode'] = mode_var
-    options = OptionMenu(frame, mode_var, *tuple(ASTAR_OPTIONS))
+    options = OptionMenu(frame, mode_var, *ASTAR_OPTIONS)
     options.grid(row=0, column=1, sticky='E')
 
     heuristic_label = Label(frame, text='Heuristic:')
@@ -73,17 +73,14 @@ def generate_options(frame, module=1):
 
     if module == 1:
         heuristic_var = StringVar(master=frame, value=ASTAR_HEURISTIC[0], name='heuristic')
-        h_options = OptionMenu(frame, heuristic_var, *tuple(ASTAR_HEURISTIC))
-    elif module == 2:
-        heuristic_var = StringVar(master=frame, value='minimum_domain_sum', name='heuristic')
-        h_options = OptionMenu(frame, heuristic_var, 'minimum_domain_sum')
+        h_options = OptionMenu(frame, heuristic_var, *ASTAR_HEURISTIC)
     else:
         heuristic_var = StringVar(master=frame, value='minimum_domain_sum', name='heuristic')
         h_options = OptionMenu(frame, heuristic_var, 'minimum_domain_sum')
     frame.master.controller.references['heuristic'] = heuristic_var
     h_options.grid(row=1, column=1, sticky='E')
 
-    if module == 1:
+    if module == 1 or module == 3:
         update_interval_label = Label(frame, text='Update interval (ms):')
         update_interval_label.grid(row=2, padx=5, pady=5, ipadx=5, ipady=5, sticky='W')
 

@@ -20,7 +20,7 @@ class NonogramProblem(AStarProblem):
         with open(path) as f:
             cols, rows = map(int, f.readline().split())
 
-            self.grid = [[False]*rows]*cols
+            self.grid = [[False]*cols]*rows
             self.total_rows = rows
             self.total_cols = cols
 
@@ -56,10 +56,9 @@ class NonogramProblem(AStarProblem):
         # TODO: Check for contradiction or solution
 
         # TODO: Dirty hack to check if it is a solution initially. Will fix this later
-        domain_length = sum((len(domains) - 1) for domains in self.initial_state.state.nodes.values())
-        if domain_length == 0:
+        h = self.heuristic(self.initial_state)
+        if h == 0:
             log("Found solution for NonogramProblem after first domain filtering loop")
-
 
     @staticmethod
     def gen_patterns(counts, cols):

@@ -40,6 +40,8 @@ class MainController(object):
         Resets stats counters frame
         """
 
+        if 'algorithm_mode' in self.references:
+            self.references['algorithm_mode'].set('best')
         if 'path_length' in self.references:
             self.references['path_length'].set('Path length: 0')
         if 'open_set_size' in self.references:
@@ -48,6 +50,10 @@ class MainController(object):
             self.references['closed_set_size'].set('ClosedSet size: 0')
         if 'total_set_size' in self.references:
             self.references['total_set_size'].set('Total set size: 0')
+        if 'total_unsatisfied_constraints' in self.references:
+            self.references['total_unsatisfied_constraints'].set('Unsatisfied constraints: 0')
+        if 'total_missing_assignment' in self.references:
+            self.references['total_missing_assignment'].set('Vertices missing assignment: 0')
 
     def set_window(self, window):
         """
@@ -73,7 +79,7 @@ class MainController(object):
             renderer.set_controller(self)
             self.window.set_renderer(renderer)
 
-            # Update panel widgets
+        # Update panel widgets
         generate_options(self.window.options_area)
         generate_stats(self.window.stats_area)
 
@@ -171,9 +177,12 @@ class MainController(object):
                 mode=self.references['algorithm_mode'].get()
             )
 
+            nonogram = None
+            if isinstance(a.problem, NonogramProblem):
+                nonogram = a.problem
+
             i = 0
             for step in a.agenda_loop():
-                print(step)
                 self.timers.append(
                     self.window.parent.after(
                         i * update_interval,
@@ -183,7 +192,8 @@ class MainController(object):
                             path,
                             math_coords=True,
                             open_set_size=o,
-                            closed_set_size=c
+                            closed_set_size=c,
+                            nonogram=nonogram
                         )
                     )
                 )

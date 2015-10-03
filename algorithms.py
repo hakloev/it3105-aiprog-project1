@@ -101,7 +101,7 @@ class AStar(object):
                 }
                 break
 
-            successors = self.problem.get_all_successor_nodes(node)
+            successors = self.problem.get_all_successor_nodes(node) or []
 
             for successor in successors:
                 node.children.add(successor)

@@ -143,30 +143,29 @@ class CanvasRenderer(AbstractRenderer):
 
         self.path_sprites.clear()
 
-        # Add sprites for current path
-        for node in reversed(path):
-            # If we are drawing using mathematical coordinates (y-reversed)
-            y = node.y
-            if math_coords:
-                y = self.board_height - node.y
+        if 'nonogram' in kwargs and kwargs['nonogram'] is not None:
+            p = kwargs['nonogram']
+            for y in range(p.total_rows):
+                for x in range(len(p.nodes[y][0][1])):
+                    coords = (
+                        x * BOARD_CELL_SIZE + 1,
+                        y * BOARD_CELL_SIZE + 1,
+                        x * BOARD_CELL_SIZE + BOARD_CELL_SIZE + 1,
+                        y * BOARD_CELL_SIZE + BOARD_CELL_SIZE + 1
+                    )
 
-            # Create the coordinates and dimension tuple
-            coords = (
-                node.x * BOARD_CELL_SIZE + 1,
-                y * BOARD_CELL_SIZE + 1,
-                node.x * BOARD_CELL_SIZE + BOARD_CELL_SIZE + 1,
-                y * BOARD_CELL_SIZE + BOARD_CELL_SIZE + 1
-            )
+                    fill_color = '#FFFFFF'
 
-            fill_color = '#994499'
+                    if p.nodes[y][0][1][x]:
+                        fill_color = '#22EE22'
 
-            # Create sprite and add to path sprite cache
-            self.path_sprites.add(
-                self.canvas.create_rectangle(
-                    *coords,
-                    fill=fill_color
-                )
-            )
+                    # Create sprite and add to path sprite cache
+                    self.path_sprites.add(
+                        self.canvas.create_rectangle(
+                            *coords,
+                            fill=fill_color
+                        )
+                    )
 
             self.window.master.controller.references['path_length'].set(
                 'Path length: %d' % len(path)
@@ -180,6 +179,45 @@ class CanvasRenderer(AbstractRenderer):
             self.window.master.controller.references['total_set_size'].set(
                 'Total set size: %d' % (open_set + closed_set)
             )
+
+        else:
+            # Add sprites for current path
+            for node in reversed(path):
+                # If we are drawing using mathematical coordinates (y-reversed)
+                y = node.y
+                if math_coords:
+                    y = self.board_height - node.y
+
+                # Create the coordinates and dimension tuple
+                coords = (
+                    node.x * BOARD_CELL_SIZE + 1,
+                    y * BOARD_CELL_SIZE + 1,
+                    node.x * BOARD_CELL_SIZE + BOARD_CELL_SIZE + 1,
+                    y * BOARD_CELL_SIZE + BOARD_CELL_SIZE + 1
+                )
+
+                fill_color = '#994499'
+
+                # Create sprite and add to path sprite cache
+                self.path_sprites.add(
+                    self.canvas.create_rectangle(
+                        *coords,
+                        fill=fill_color
+                    )
+                )
+
+                self.window.master.controller.references['path_length'].set(
+                    'Path length: %d' % len(path)
+                )
+                self.window.master.controller.references['open_set_size'].set(
+                    'OpenSet size: %d' % open_set
+                )
+                self.window.master.controller.references['closed_set_size'].set(
+                    'ClosedSet size: %d' % closed_set
+                )
+                self.window.master.controller.references['total_set_size'].set(
+                    'Total set size: %d' % (open_set + closed_set)
+                )
 
     def clear(self):
         """
