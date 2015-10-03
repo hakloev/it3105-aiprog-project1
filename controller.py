@@ -2,13 +2,12 @@
 #
 # Created by 'myth' on 9/23/15
 
-import random
 import time
 
 from tkinter import messagebox
 
 from algorithms import *
-from datastructures import Graph, Node
+from datastructures import Graph
 from gui.widgets import *
 from gui.render import CanvasRenderer, GraphRenderer
 from module1.navigation_problem import *
