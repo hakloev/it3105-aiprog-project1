@@ -10,8 +10,8 @@ from algorithms import *
 from datastructures import Graph
 from gui.widgets import *
 from gui.render import CanvasRenderer, GraphRenderer
-from module1.navigation_problem import *
-from module2.vc_problem import *
+from module1.navigation import *
+from module2.vc import *
 
 
 class MainController(object):
