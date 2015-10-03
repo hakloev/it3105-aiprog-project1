@@ -51,10 +51,15 @@ class NonogramProblem(AStarProblem):
         self.initial_state = AStarState()
         self.initial_state.state = self.gac.csp_state
 
-        # TODO: Check for contradiction or solution
-        print(self.gac.csp_state.nodes)
-
         log('NonogramProblem initialized with %dx%d grid' % (rows, cols))
+
+        # TODO: Check for contradiction or solution
+
+        # TODO: Dirty hack to check if it is a solution initially. Will fix this later
+        domain_length = sum((len(domains) - 1) for domains in self.initial_state.state.nodes.values())
+        if domain_length == 0:
+            log("Found solution for NonogramProblem after first domain filtering loop")
+
 
     @staticmethod
     def gen_patterns(counts, cols):
@@ -121,8 +126,37 @@ class NonogramProblem(AStarProblem):
     def get_goal_node(self):
         return None
 
-    def get_all_successor_nodes(self, node):
-        pass
+    def get_all_successor_nodes(self, astar_state):
+        """
+        Fetches all successor nodes from a given CSP state
+        In this spesific problem that means all states with a domain
+        length greater than 1 for a random node
+        :return: The generated successor nodes
+        """
+        csp_state = astar_state.state
+        successor_nodes = []
+
+        #  TODO: Unable to check if this is correct, but will see when GUI is working.
+        for node, domains in csp_state.nodes.items():
+            if len(domains) > 1:
+                for d in range(len(domains)):
+                    print(node, domains[d])
+                    child_state = deepcopy(csp_state)
+
+                    child_state.nodes[node] = [list(domains)[d]]
+
+                    if DEBUG:
+                        print("Domain for %s is now %s" % (node, str(child_state.nodes[node])))
+
+                    self.gac.csp_state = child_state
+                    self.gac.run_again(node)
+
+                    if not child_state.contradiction:
+                        astar_state = AStarState()
+                        astar_state.state = child_state
+                        successor_nodes.append(astar_state)
+
+                return successor_nodes
 
     def get_node(self, x, y):
         a = AStarState(index=0, x=x, y=y)
