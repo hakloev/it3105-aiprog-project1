@@ -173,6 +173,7 @@ class MainController(object):
 
             i = 0
             for step in a.agenda_loop():
+                print(step)
                 self.timers.append(
                     self.window.parent.after(
                         i * update_interval,
