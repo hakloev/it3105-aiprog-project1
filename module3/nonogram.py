@@ -18,7 +18,7 @@ class NonogramProblem(AStarProblem):
 
         self.nodes = {}
         with open(path) as f:
-            rows, cols = map(int, f.readline().split())
+            cols, rows = map(int, f.readline().split())
 
             self.grid = [[False]*rows]*cols
             self.total_rows = rows
