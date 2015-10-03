@@ -91,10 +91,12 @@ class NonogramProblem(AStarProblem):
         """
         Generates constraint network
         """
-
         # TODO: Generate constraints based on make_func or something
 
-        pass
+        for row in range(self.total_rows):
+            for col in range(self.total_cols):
+                self.constraints[(row, col)] = lambda x, y: x[0] == y[0]
+        print(self.constraints.keys())
 
     def get_start_node(self):
         return self.initial_state
