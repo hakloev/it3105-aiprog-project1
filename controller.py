@@ -197,7 +197,8 @@ class MainController(object):
             k = int(self.references['k_value'].get())
             n = {node.index: set([i for i in range(k)]) for node in n}
 
-            vc_problem = VCProblem(n, e)
+            cf = make_func(['x', 'y'], self.references['constraint_formula'].get())
+            vc_problem = VCProblem(n, e, cf=cf)
             solver = AStar(problem=vc_problem)
 
             t = time.time()

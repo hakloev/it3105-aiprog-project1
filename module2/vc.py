@@ -10,7 +10,7 @@ from common import *
 
 class VCProblem(AStarProblem):
 
-    def __init__(self, nodes, edges):
+    def __init__(self, nodes, edges, cf=lambda x, y: x != y):
 
         self.constraints = {}
         for from_node, to_node in edges:
@@ -21,7 +21,7 @@ class VCProblem(AStarProblem):
                 self.constraints[to_node] = []
             self.constraints[to_node].append(from_node)
 
-        self.gac = GAC(csp_state=CSPState(nodes), cnet=self.constraints)
+        self.gac = GAC(csp_state=CSPState(nodes), cnet=self.constraints, cf=cf)
 
         self.gac.initialize()
         self.gac.domain_filtering_loop()
