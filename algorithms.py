@@ -177,6 +177,12 @@ GAC_DEFAULT_K = 4
 class GAC(object):
 
     def __init__(self, cnet=None, csp_state=None, cf=lambda x, y: x != y):
+        """
+        Constructor
+        :param cnet:
+        :param csp_state:
+        :return:
+        """
         self.csp_state = csp_state
         self.cnet = cnet
         self.cf = cf
