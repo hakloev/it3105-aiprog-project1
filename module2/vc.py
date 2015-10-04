@@ -31,10 +31,13 @@ class VCProblem(AStarProblem):
         self.gac.domain_filtering_loop()
         self.initial_state = AStarState()
         self.initial_state.state = self.gac.csp_state
+        self.goal_node = None
 
         # TODO: Check for contradiction or solution
-
-        self.goal_node = None
+        h = self.heuristic(self.initial_state)
+        if h == 0:
+            log("Found solution for VCProblem after first domain filtering loop")
+            print("Found solution for VCProblem after first domain filtering loop")  # Should add debug flag here!
 
     def get_start_node(self):
         """

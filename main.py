@@ -21,6 +21,9 @@ if __name__ == '__main__':
     root.wm_title('Project 1')
     root.wm_protocol('WM_DELETE_WINDOW', root.quit)
 
+    # Make window appear in front on OS X
+    root.attributes("-topmost", True)
+
     # Render the main window
     main = Main(root, MainController(), name='main')
     main.controller.set_window(main)
