@@ -13,7 +13,8 @@ class NonogramProblem(AStarProblem):
 
     def __init__(self, path):
         """
-        Constructor
+        Constructor for the NonogramProblem
+        Will set up the grid and create all nodes with all possible permutations as domains
         """
 
         self.nodes = {}
@@ -101,7 +102,10 @@ class NonogramProblem(AStarProblem):
 
     def generate_constraints(self):
         """
-        Generates constraint network
+        Generates constraint network for the problem
+        In this problem it is implemented as a dictionary with a given row/col index as a key
+        The respective value is a list with the index for all possible rows/columns the row/col has constraints against
+        More specific this means a list of all intersecting cells between a row and a column.
         """
 
         for row in range(self.total_rows):
@@ -110,9 +114,19 @@ class NonogramProblem(AStarProblem):
             self.constraints[self.total_rows + col] = [i for i in range(0, self.total_rows)]
 
     def get_start_node(self):
+        """
+        Returns the start node for this problem instance
+        :return: the initial state in this specific problem
+        """
         return self.initial_state
 
     def heuristic(self, astar_state):
+        """
+        Calculates the heuristic for a given state
+        In this problem the heuristic is calculated from the sum of all domains in the variables list
+        :param astar_state: The state to calculate h for
+        :return: The h value
+        """
         h = sum((len(domains) - 1) for domains in astar_state.state.nodes.values())
         if h == 0:
             astar_state.is_goal = True
@@ -120,9 +134,19 @@ class NonogramProblem(AStarProblem):
         return h
 
     def arc_cost(self, node):
+        """
+        Returns the arc cost for a given node
+        :param node: The node to get arc cost for
+        :return: The arc cost, 1 in this implementation
+        """
         return 1
 
     def get_goal_node(self):
+        """
+        Returns the goal node for the problem instance
+        Not implemented for this problem
+        :return: None in this instance
+        """
         return None
 
     def get_all_successor_nodes(self, astar_state):
@@ -135,7 +159,7 @@ class NonogramProblem(AStarProblem):
         csp_state = astar_state.state
         successor_nodes = []
 
-        #  TODO: Unable to check if this is correct, but will see when GUI is working.
+        #  TODO: Is this verified?
         for node, domains in csp_state.nodes.items():
             if len(domains) > 1:
                 for d in range(len(domains)):
@@ -158,6 +182,13 @@ class NonogramProblem(AStarProblem):
                 return successor_nodes
 
     def get_node(self, x, y):
+        """
+        Returnes a given node in the grid representation
+        It used the x and y coordinates to achieve this
+        :param x: x-coordinate
+        :param y: y-coordinate
+        :return:
+        """
         a = AStarState(index=0, x=x, y=y)
         a.state = self.grid[y][x]
         return a

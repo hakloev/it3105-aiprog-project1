@@ -60,7 +60,6 @@ class VCProblem(AStarProblem):
         length greater than 1 for a random node
         :return: The generated successor nodes
         """
-
         csp_state = astar_state.state
         successor_nodes = []
 
@@ -96,7 +95,6 @@ class VCProblem(AStarProblem):
         :param: The state to calculate the heuristic on
         :return: The heuristic for the given state
         """
-
         h = sum((len(domains) - 1) for domains in astar_state.state.nodes.values())
         if h == 0:
             self.goal_node = astar_state

@@ -85,7 +85,6 @@ class AStar(object):
         """
         The implementation of the A* algorithm. This is the main loop for the algorithm
         """
-
         self.add_node(self.start_node)
 
         while len(self.open_set):
@@ -178,7 +177,7 @@ class GAC(object):
 
     def __init__(self, cnet=None, csp_state=None, cf=lambda x, y: x != y):
         """
-        Constructor
+        Constructor for the GAC algorithm
         :param cnet:
         :param csp_state:
         :return:
@@ -199,6 +198,12 @@ class GAC(object):
         log('Queue initialized with %d pairs' % len(self.queue))
 
     def revise(self, from_node):
+        """
+        Removes all inconsistent values in a domain for all possible arc from an node
+        It also saves to the csp_state if the current state is a contradiction
+        :param from_node: The node to run revise from
+        :return: Boolean telling whether the domain was revised or not
+        """
         to_be_removed = []
         for arc in self.cnet[from_node]:
             for domain in self.csp_state.nodes[from_node]:
@@ -227,6 +232,11 @@ class GAC(object):
         return False
 
     def domain_filtering_loop(self):
+        """
+        Pops of all todo revise pairs from the queue and runs revise on the from_node
+        If the domains is revised it will add all other possible constraints from the from_node to the revise queue to
+        check for further domain reductions possible
+        """
         while self.queue:
             from_node, to_node = self.queue.pop(0)
             if self.revise(from_node):
@@ -235,6 +245,10 @@ class GAC(object):
                         self.queue.append((arc, from_node))
 
     def run_again(self, node):
+        """
+        A soft-reboot of the domain filtering loop from a given node
+        :param node: The node to append to the revise queue
+        """
         for arc in self.cnet[node]:
             if node != arc:
                 self.queue.append((arc, node))
