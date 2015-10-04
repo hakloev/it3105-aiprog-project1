@@ -131,9 +131,20 @@ class MainController(object):
         generate_options(self.window.options_area, module=3)
         generate_stats(self.window.stats_area, module=3)
 
+        t = time.time()
         self.window.renderer.clear()
         self.window.renderer.set_board(NonogramProblem(kwargs['file_path']))
         self.window.render(math_coords=False)
+        initial_result = self.window.renderer.board.heuristic(self.window.renderer.board.initial_state)
+
+        if initial_result == 0:
+            messagebox.showinfo(
+                'Complete!',
+                'Found a solution during initial domain filtering loop in %f seconds...' % (time.time() - t)
+            )
+            log("Found solution for NonogramProblem after first domain filtering loop")
+            print("Found solution for NonogramProblem after first domain filtering loop")
+            self.solve()
 
     def solve(self, algorithm='astar'):
         """
@@ -181,8 +192,12 @@ class MainController(object):
             if isinstance(a.problem, NonogramProblem):
                 nonogram = a.problem
 
-            i = 0
+            i = -1
+            t = time.time()
+            last_node = None
             for step in a.agenda_loop():
+                i += 1
+                last_node = step['path'][0]
                 self.timers.append(
                     self.window.parent.after(
                         i * update_interval,
@@ -197,7 +212,16 @@ class MainController(object):
                         )
                     )
                 )
-                i += 1
+            if last_node.is_goal:
+                messagebox.showinfo(
+                    'Complete!',
+                    'Found a solution in %f seconds...' % (time.time() - t)
+                )
+            else:
+                messagebox.showerror(
+                    'Complete!',
+                    'No solution could be found'
+                )
 
         elif algorithm == 'astar_gac':
 
@@ -210,20 +234,24 @@ class MainController(object):
 
             cf = make_func(['x', 'y'], self.references['constraint_formula'].get())
             vc_problem = VCProblem(n, e, cf=cf)
-            solver = AStar(problem=vc_problem)
+            solver = AStar(
+                problem=vc_problem,
+                mode=self.references['algorithm_mode'].get()
+            )
 
             t = time.time()
 
-            i = 0
+            i = -1
             last_node = None
             for step in solver.agenda_loop():
+                i += 1
                 p = step['path']
                 last_node = p[0]
                 oss = len(step['open_set'])
                 css = len(step['closed_set'])
 
-                vma = sum(0 if len(y) - 1 == 0 else 1 for x, y in last_node.state.nodes.items())
-                tuc = sum(1 if len(y) == 0 else 0 for x, y in last_node.state.nodes.items())
+                vma = sum(len(y) != 1 for x, y in last_node.state.nodes.items())
+                tuc = sum(len(y) == 0 for x, y in last_node.state.nodes.items())
                 self.references['total_missing_assignment'].set('Vertices missing assignment: %d' % vma)
                 self.references['total_unsatisfied_constraints'].set('Unsatisfied constraints: %d' % tuc)
 
@@ -233,7 +261,6 @@ class MainController(object):
                     closed_set_size=css
                 )
 
-                i += 1
                 if time.time() - t > TIMEOUT_THRESHOLD:
                     messagebox.showerror(
                         'Timeout!',

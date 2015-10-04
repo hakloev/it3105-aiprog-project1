@@ -144,8 +144,10 @@ class CanvasRenderer(AbstractRenderer):
         self.path_sprites.clear()
 
         if 'nonogram' in kwargs and kwargs['nonogram'] is not None:
-            p = kwargs['nonogram']
-            for y in range(p.total_rows):
+            p = path[0].state
+            for y in range(kwargs['nonogram'].total_rows):
+                if len(p.nodes[y]) != 1:
+                    continue
                 for x in range(len(p.nodes[y][0][1])):
                     coords = (
                         x * BOARD_CELL_SIZE + 1,
@@ -168,21 +170,21 @@ class CanvasRenderer(AbstractRenderer):
                     )
 
             self.window.master.controller.references['path_length'].set(
-                'Path length: %d' % len(path)
+                'Path length: %d' % (len(path) - 1)
             )
             self.window.master.controller.references['open_set_size'].set(
                 'OpenSet size: %d' % open_set
             )
             self.window.master.controller.references['closed_set_size'].set(
-                'ClosedSet size: %d' % closed_set
+                'ClosedSet size: %d' % (closed_set - 1)
             )
             self.window.master.controller.references['total_set_size'].set(
-                'Total set size: %d' % (open_set + closed_set)
+                'Total set size: %d' % (open_set + closed_set - 1)
             )
 
         else:
             # Add sprites for current path
-            for node in reversed(path):
+            for node in reversed(path[:-1]):
                 # If we are drawing using mathematical coordinates (y-reversed)
                 y = node.y
                 if math_coords:
@@ -207,7 +209,7 @@ class CanvasRenderer(AbstractRenderer):
                 )
 
                 self.window.master.controller.references['path_length'].set(
-                    'Path length: %d' % len(path)
+                    'Path length: %d' % (len(path) - 1)
                 )
                 self.window.master.controller.references['open_set_size'].set(
                     'OpenSet size: %d' % open_set

@@ -54,13 +54,6 @@ class NonogramProblem(AStarProblem):
 
         log('NonogramProblem initialized with %dx%d grid' % (rows, cols))
 
-        # TODO: Check for contradiction or solution
-        h = self.heuristic(self.initial_state)
-        if h == 0:
-            log("Found solution for NonogramProblem after first domain filtering loop")
-            print("Found solution for NonogramProblem after first domain filtering loop")  # Should add debug flag here!
-
-
     @staticmethod
     def gen_patterns(counts, cols):
         """
@@ -159,12 +152,10 @@ class NonogramProblem(AStarProblem):
         csp_state = astar_state.state
         successor_nodes = []
 
-        #  TODO: Is this verified?
         for node, domains in csp_state.nodes.items():
             if len(domains) > 1:
                 for d in range(len(domains)):
                     child_state = deepcopy(csp_state)
-
                     child_state.nodes[node] = [list(domains)[d]]
 
                     if DEBUG:

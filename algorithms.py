@@ -158,14 +158,14 @@ class AStar(object):
 
     def get_path_from_node(self, path):
         """
-        This method returns a list containing a deepcopy of all node objects in the current path
+        This method returns a list containing a shallow copy of all node objects in the current path
         To be used with for instance the GUI visualisation
         :param path:
         :return:
         """
         while path[-1] != self.problem.get_start_node():
             path.append(self.parent_of[path[-1]])
-        return path[::1]
+        return path[::]
 
 # --- Generalized Arc Constraint ---
 
