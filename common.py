@@ -6,7 +6,7 @@ from datetime import datetime
 import logging
 import os
 
-DEBUG = True
+DEBUG = False
 COLORMAP = {
     0: 'red',
     1: 'blue',
