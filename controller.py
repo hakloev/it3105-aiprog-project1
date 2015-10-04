@@ -193,8 +193,11 @@ class MainController(object):
                 nonogram = a.problem
 
             i = -1
+            t = time.time()
+            last_node = None
             for step in a.agenda_loop():
                 i += 1
+                last_node = step['path'][0]
                 self.timers.append(
                     self.window.parent.after(
                         i * update_interval,
@@ -208,6 +211,16 @@ class MainController(object):
                             nonogram=nonogram
                         )
                     )
+                )
+            if last_node.is_goal:
+                messagebox.showinfo(
+                    'Complete!',
+                    'Found a solution in %f seconds...' % (time.time() - t)
+                )
+            else:
+                messagebox.showerror(
+                    'Complete!',
+                    'No solution could be found'
                 )
 
         elif algorithm == 'astar_gac':

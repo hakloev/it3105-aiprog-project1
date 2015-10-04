@@ -152,13 +152,10 @@ class NonogramProblem(AStarProblem):
         csp_state = astar_state.state
         successor_nodes = []
 
-        #  TODO: Is this verified?
         for node, domains in csp_state.nodes.items():
             if len(domains) > 1:
                 for d in range(len(domains)):
-                    print(node, domains[d])
                     child_state = deepcopy(csp_state)
-
                     child_state.nodes[node] = [list(domains)[d]]
 
                     if DEBUG:
