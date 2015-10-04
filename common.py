@@ -6,7 +6,7 @@ from datetime import datetime
 import logging
 import os
 
-DEBUG = True
+DEBUG = False
 COLORMAP = {
     0: 'red',
     1: 'blue',
@@ -20,7 +20,7 @@ COLORMAP = {
     9: 'gold'
 }
 GUI_UPDATE_INTERVAL = 50  # milliseconds
-TIMEOUT_THRESHOLD = 45  # seconds
+TIMEOUT_THRESHOLD = 60  # seconds
 BOARD_CELL_SIZE = 10  # pixels
 
 

@@ -131,9 +131,20 @@ class MainController(object):
         generate_options(self.window.options_area, module=3)
         generate_stats(self.window.stats_area, module=3)
 
+        t = time.time()
         self.window.renderer.clear()
         self.window.renderer.set_board(NonogramProblem(kwargs['file_path']))
         self.window.render(math_coords=False)
+        initial_result = self.window.renderer.board.heuristic(self.window.renderer.board.initial_state)
+
+        if initial_result == 0:
+            messagebox.showinfo(
+                'Complete!',
+                'Found a solution during initial domain filtering loop in %f seconds...' % (time.time() - t)
+            )
+            log("Found solution for NonogramProblem after first domain filtering loop")
+            print("Found solution for NonogramProblem after first domain filtering loop")
+            self.solve()
 
     def solve(self, algorithm='astar'):
         """
@@ -181,8 +192,9 @@ class MainController(object):
             if isinstance(a.problem, NonogramProblem):
                 nonogram = a.problem
 
-            i = 0
+            i = -1
             for step in a.agenda_loop():
+                i += 1
                 self.timers.append(
                     self.window.parent.after(
                         i * update_interval,
@@ -197,7 +209,6 @@ class MainController(object):
                         )
                     )
                 )
-                i += 1
 
         elif algorithm == 'astar_gac':
 
@@ -214,9 +225,10 @@ class MainController(object):
 
             t = time.time()
 
-            i = 0
+            i = -1
             last_node = None
             for step in solver.agenda_loop():
+                i += 1
                 p = step['path']
                 last_node = p[0]
                 oss = len(step['open_set'])
@@ -233,7 +245,6 @@ class MainController(object):
                     closed_set_size=css
                 )
 
-                i += 1
                 if time.time() - t > TIMEOUT_THRESHOLD:
                     messagebox.showerror(
                         'Timeout!',

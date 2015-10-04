@@ -54,13 +54,6 @@ class NonogramProblem(AStarProblem):
 
         log('NonogramProblem initialized with %dx%d grid' % (rows, cols))
 
-        # TODO: Check for contradiction or solution
-        h = self.heuristic(self.initial_state)
-        if h == 0:
-            log("Found solution for NonogramProblem after first domain filtering loop")
-            print("Found solution for NonogramProblem after first domain filtering loop")  # Should add debug flag here!
-
-
     @staticmethod
     def gen_patterns(counts, cols):
         """

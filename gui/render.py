@@ -168,21 +168,21 @@ class CanvasRenderer(AbstractRenderer):
                     )
 
             self.window.master.controller.references['path_length'].set(
-                'Path length: %d' % len(path)
+                'Path length: %d' % (len(path) - 1)
             )
             self.window.master.controller.references['open_set_size'].set(
                 'OpenSet size: %d' % open_set
             )
             self.window.master.controller.references['closed_set_size'].set(
-                'ClosedSet size: %d' % closed_set
+                'ClosedSet size: %d' % (closed_set - 1)
             )
             self.window.master.controller.references['total_set_size'].set(
-                'Total set size: %d' % (open_set + closed_set)
+                'Total set size: %d' % (open_set + closed_set - 1)
             )
 
         else:
             # Add sprites for current path
-            for node in reversed(path):
+            for node in reversed(path[:-1]):
                 # If we are drawing using mathematical coordinates (y-reversed)
                 y = node.y
                 if math_coords:
@@ -207,7 +207,7 @@ class CanvasRenderer(AbstractRenderer):
                 )
 
                 self.window.master.controller.references['path_length'].set(
-                    'Path length: %d' % len(path)
+                    'Path length: %d' % (len(path) - 1)
                 )
                 self.window.master.controller.references['open_set_size'].set(
                     'OpenSet size: %d' % open_set
