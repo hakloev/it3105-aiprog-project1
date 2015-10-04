@@ -221,7 +221,10 @@ class MainController(object):
 
             cf = make_func(['x', 'y'], self.references['constraint_formula'].get())
             vc_problem = VCProblem(n, e, cf=cf)
-            solver = AStar(problem=vc_problem)
+            solver = AStar(
+                problem=vc_problem,
+                mode=self.references['algorithm_mode'].get()
+            )
 
             t = time.time()
 
@@ -234,8 +237,8 @@ class MainController(object):
                 oss = len(step['open_set'])
                 css = len(step['closed_set'])
 
-                vma = sum(0 if len(y) - 1 == 0 else 1 for x, y in last_node.state.nodes.items())
-                tuc = sum(1 if len(y) == 0 else 0 for x, y in last_node.state.nodes.items())
+                vma = sum(len(y) != 1 for x, y in last_node.state.nodes.items())
+                tuc = sum(len(y) == 0 for x, y in last_node.state.nodes.items())
                 self.references['total_missing_assignment'].set('Vertices missing assignment: %d' % vma)
                 self.references['total_unsatisfied_constraints'].set('Unsatisfied constraints: %d' % tuc)
 

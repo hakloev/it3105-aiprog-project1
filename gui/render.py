@@ -144,8 +144,10 @@ class CanvasRenderer(AbstractRenderer):
         self.path_sprites.clear()
 
         if 'nonogram' in kwargs and kwargs['nonogram'] is not None:
-            p = kwargs['nonogram']
-            for y in range(p.total_rows):
+            p = path[0].state
+            for y in range(kwargs['nonogram'].total_rows):
+                if len(p.nodes[y]) != 1:
+                    continue
                 for x in range(len(p.nodes[y][0][1])):
                     coords = (
                         x * BOARD_CELL_SIZE + 1,

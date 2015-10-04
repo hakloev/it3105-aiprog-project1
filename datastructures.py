@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 from common import *
 
 
@@ -114,7 +115,7 @@ class AStarState(Node):
         super(AStarState, self).__init__(index=index, x=x, y=y)
         self.is_start = None
         self.is_goal = None
-        self.state = None
+        self.state = index
         self.arc_cost = 1
         self.g = 0
         self.h = 0
