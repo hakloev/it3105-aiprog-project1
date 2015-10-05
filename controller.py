@@ -212,12 +212,21 @@ class MainController(object):
                         )
                     )
                 )
+            """
+            #  TODO: The following code made a bug that printed the solution before the GUI had printed all the paths
             if last_node.is_goal:
+                debug("Found sol")
                 messagebox.showinfo(
                     'Complete!',
                     'Found a solution in %f seconds...' % (time.time() - t)
                 )
             else:
+                messagebox.showerror(
+                    'Complete!',
+                    'No solution could be found'
+                )
+            """
+            if not last_node.is_goal:
                 messagebox.showerror(
                     'Complete!',
                     'No solution could be found'
