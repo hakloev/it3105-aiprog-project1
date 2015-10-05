@@ -64,19 +64,16 @@ class NonogramProblem(AStarProblem):
         """
 
         if len(counts) == 0:
-            row = []
-            for x in range(cols):
-                row.append(False)
-            return [row]
+            return [[False for i in range(cols)]]
 
         permutations = []
 
         for start in range(cols - counts[0] + 1):
             permutation = []
-            for x in range(start):
-                permutation.append(False)
-            for x in range(start, start + counts[0]):
-                permutation.append(True)
+
+            permutation.extend([False for i in range(start)])
+            permutation.extend([True for i in range(start, start + counts[0])])
+
             x = start + counts[0]
             if x < cols:
                 permutation.append(False)
@@ -84,13 +81,17 @@ class NonogramProblem(AStarProblem):
             if x == cols and len(counts) == 0:
                 permutations.append(permutation)
                 break
+
             sub_start = x
             sub_rows = NonogramProblem.gen_patterns(counts[1:len(counts)], cols - sub_start)
+
             for sub_row in sub_rows:
                 sub_permutation = deepcopy(permutation)
-                for x in range(sub_start, cols):
-                    sub_permutation.append(sub_row[x - sub_start])
+
+                sub_permutation.extend([sub_row[x - sub_start] for x in range(sub_start, cols)])
+
                 permutations.append(sub_permutation)
+
         return permutations
 
     def generate_constraints(self):
